@@ -1,103 +1,77 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { Github, Mail, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+
+export default function LandingPage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-100 to-blue-200">
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Hero Section */}
+          <div className="mb-12">
+            <h1 className="text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              DevReview
+            </h1>
+            <p className="text-2xl text-gray-700 mb-8 leading-relaxed">
+              AI는 줄 수 없는, 시니어의 진짜 피드백으로<br />
+              취업 관문을 뚫으세요
+            </p>
+            <p className="text-lg text-gray-600 mb-12">
+              실무 경험이 풍부한 시니어 개발자들로부터 포트폴리오에 대한<br />
+              구체적이고 실용적인 피드백을 받아보세요
+            </p>
+          </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {/* Auth Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-colors">
+              <Github className="w-5 h-5" />
+              GitHub로 시작하기
+            </button>
+            <button className="w-full sm:w-auto bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-8 py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-colors">
+              <Mail className="w-5 h-5" />
+              Google로 시작하기
+            </button>
+          </div>
+
+          {/* Features */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-gray-900 border border-blue-100">
+              <div className="text-3xl mb-4">🎯</div>
+              <h3 className="text-xl font-semibold mb-3">실무 중심 피드백</h3>
+              <p className="text-gray-700">
+                현업에서 활동하는 시니어 개발자들이 실무 관점에서 구체적인 개선점을 제안합니다
+              </p>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-gray-900 border border-blue-100">
+              <div className="text-3xl mb-4">👥</div>
+              <h3 className="text-xl font-semibold mb-3">익명 리뷰 시스템</h3>
+              <p className="text-gray-700">
+                부담 없는 익명 환경에서 솔직하고 건설적인 피드백을 주고받을 수 있습니다
+              </p>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-gray-900 border border-blue-100">
+              <div className="text-3xl mb-4">🚀</div>
+              <h3 className="text-xl font-semibold mb-3">성장 지향</h3>
+              <p className="text-gray-700">
+                단순한 평가가 아닌, 실제 취업과 성장에 도움이 되는 방향성을 제시합니다
+              </p>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center">
+            <Link 
+              href="/role-selection"
+              className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors shadow-lg"
+            >
+              시작하기
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
