@@ -51,48 +51,26 @@ const SAMPLE_FEEDBACKS = [
   },
   {
     id: 2,
-    author: 'Senior_Dev_B',
-    content: '코드 구조가 깔끔하고 README 문서도 잘 작성되어 있네요. 테스트 코드를 추가하고 CI/CD 파이프라인을 구축하면 더욱 완성도 높은 프로젝트가 될 것 같습니다.',
+    author: 'Tech_Mentor_B',
+    content: '코드 구조가 깔끔하고 주석도 잘 되어있네요. 테스트 코드 작성도 고려해보시면 더 완성도 높은 프로젝트가 될 것 같습니다.',
     likes: 8,
     createdAt: '2024-08-17',
-    verified: true
-  },
-  {
-    id: 3,
-    author: 'Senior_Dev_C',
-    content: '성능 최적화를 위한 무한 스크롤 구현이 좋습니다. 다음에는 PWA 기능을 추가해보시거나, 마이크로서비스 아키텍처로 확장해보는 것을 추천드립니다.',
-    likes: 12,
-    createdAt: '2024-08-18',
     verified: true
   }
 ];
 
 export default function PortfolioDetailPage() {
   const [newFeedback, setNewFeedback] = useState('');
-  const [feedbacks, setFeedbacks] = useState(SAMPLE_FEEDBACKS);
+  const [rating, setRating] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
 
   const handleSubmitFeedback = () => {
-    if (!newFeedback.trim()) return;
-    
-    const feedback = {
-      id: feedbacks.length + 1,
-      author: 'Senior_Dev_New',
-      content: newFeedback,
-      likes: 0,
-      createdAt: new Date().toISOString().split('T')[0],
-      verified: true
-    };
-    
-    setFeedbacks([...feedbacks, feedback]);
-    setNewFeedback('');
-  };
-
-  const handleLikeFeedback = (feedbackId: number) => {
-    setFeedbacks(feedbacks.map(feedback => 
-      feedback.id === feedbackId 
-        ? { ...feedback, likes: feedback.likes + 1 }
-        : feedback
-    ));
+    if (newFeedback.trim()) {
+      // TODO: API 연결
+      console.log('Submit feedback:', { content: newFeedback, rating });
+      setNewFeedback('');
+      setRating(0);
+    }
   };
 
   return (
@@ -101,55 +79,56 @@ export default function PortfolioDetailPage() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link href="/feed" className="p-2 hover:bg-gray-100 rounded-lg">
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900">
-                포트폴리오 상세
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
+                <span className="hidden sm:inline">포트폴리오 상세</span>
+                <span className="sm:hidden">상세</span>
               </h1>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* 메인 콘텐츠 */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 lg:space-y-8">
             {/* 포트폴리오 정보 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+              <div className="mb-4 sm:mb-6">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                   {SAMPLE_PORTFOLIO.title}
                 </h1>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 mb-4 text-sm sm:text-base">
                   {SAMPLE_PORTFOLIO.description}
                 </p>
                 
-                <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500 mb-4">
                   <span>작성자: {SAMPLE_PORTFOLIO.author}</span>
-                  <span>•</span>
+                  <span className="hidden sm:inline">•</span>
                   <span>{SAMPLE_PORTFOLIO.createdAt}</span>
                 </div>
 
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
                   {SAMPLE_PORTFOLIO.techStack.map((tech) => (
                     <span
                       key={tech}
-                      className="px-2 py-1 bg-blue-50 text-blue-500 text-sm rounded-md"
+                      className="px-2 py-1 bg-blue-50 text-blue-500 text-xs sm:text-sm rounded-md"
                     >
                       {tech}
                     </span>
                   ))}
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   <a
                     href={SAMPLE_PORTFOLIO.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
                   >
                     <Github className="w-4 h-4" />
                     GitHub
@@ -159,7 +138,7 @@ export default function PortfolioDetailPage() {
                       href={SAMPLE_PORTFOLIO.deployUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
                     >
                       <ExternalLink className="w-4 h-4" />
                       라이브 데모
@@ -170,12 +149,98 @@ export default function PortfolioDetailPage() {
             </div>
 
             {/* 상세 설명 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 프로젝트 상세 설명
               </h2>
-              <div className="prose max-w-none">
+              <div className="prose max-w-none text-sm sm:text-base">
                 <ReactMarkdown>{SAMPLE_PORTFOLIO.content}</ReactMarkdown>
+              </div>
+            </div>
+
+            {/* 피드백 작성 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">피드백 작성</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    평점
+                  </label>
+                  <div className="flex items-center space-x-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setRating(star)}
+                        className="focus:outline-none"
+                      >
+                        <Star
+                          className={`w-6 h-6 ${
+                            star <= rating
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    피드백 내용
+                  </label>
+                  <textarea
+                    value={newFeedback}
+                    onChange={(e) => setNewFeedback(e.target.value)}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                    placeholder="건설적인 피드백을 작성해주세요..."
+                  />
+                </div>
+
+                <button
+                  onClick={handleSubmitFeedback}
+                  disabled={!newFeedback.trim() || rating === 0}
+                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
+                >
+                  <Send className="w-4 h-4" />
+                  피드백 등록
+                </button>
+              </div>
+            </div>
+
+            {/* 피드백 목록 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                피드백 ({SAMPLE_FEEDBACKS.length})
+              </h3>
+              
+              <div className="space-y-4">
+                {SAMPLE_FEEDBACKS.map((feedback) => (
+                  <div key={feedback.id} className="border-b border-gray-200 last:border-b-0 pb-4 last:pb-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900 text-sm sm:text-base">
+                          {feedback.author}
+                        </span>
+                        {feedback.verified && (
+                          <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+                            시니어
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-500">
+                        <span>{feedback.createdAt}</span>
+                        <div className="flex items-center gap-1">
+                          <ThumbsUp className="w-4 h-4" />
+                          <span>{feedback.likes}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-gray-700 text-sm sm:text-base">{feedback.content}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -183,80 +248,58 @@ export default function PortfolioDetailPage() {
           {/* 사이드바 */}
           <div className="space-y-6">
             {/* 통계 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">통계</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <MessageCircle className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-600">피드백</span>
+                    <span className="text-gray-600 text-sm sm:text-base">피드백</span>
                   </div>
                   <span className="font-semibold">{SAMPLE_PORTFOLIO.feedbackCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Heart className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-600">좋아요</span>
+                    <span className="text-gray-600 text-sm sm:text-base">좋아요</span>
                   </div>
                   <span className="font-semibold">{SAMPLE_PORTFOLIO.likes}</span>
                 </div>
               </div>
+              
+              <button
+                onClick={() => setIsLiked(!isLiked)}
+                className={`w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm sm:text-base ${
+                  isLiked
+                    ? 'bg-red-50 text-red-600 border border-red-200'
+                    : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                {isLiked ? '좋아요 취소' : '좋아요'}
+              </button>
             </div>
 
-            {/* 피드백 작성 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                피드백 남기기
-              </h3>
-              <div className="space-y-4">
-                <textarea
-                  value={newFeedback}
-                  onChange={(e) => setNewFeedback(e.target.value)}
-                  placeholder="건설적인 피드백을 남겨주세요..."
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <button
-                  onClick={handleSubmitFeedback}
-                  className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-                >
-                  <Send className="w-4 h-4" />
-                  피드백 남기기
-                </button>
-              </div>
-            </div>
-
-            {/* 피드백 목록 */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                받은 피드백 ({feedbacks.length})
-              </h3>
-              <div className="space-y-4">
-                {feedbacks.map((feedback) => (
-                  <div key={feedback.id} className="border-b border-gray-100 pb-4 last:border-b-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-medium text-gray-900">
-                        {feedback.author}
-                      </span>
-                      {feedback.verified && (
-                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                      )}
-                      <span className="text-sm text-gray-500">
-                        {feedback.createdAt}
-                      </span>
-                    </div>
-                    <p className="text-gray-700 text-sm mb-2">
-                      {feedback.content}
-                    </p>
-                    <button
-                      onClick={() => handleLikeFeedback(feedback.id)}
-                      className="flex items-center gap-1 text-sm text-gray-500 hover:text-sky-600 transition-colors"
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                      <span>{feedback.likes}</span>
-                    </button>
-                  </div>
-                ))}
+            {/* 관련 프로젝트 */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">관련 프로젝트</h3>
+              <div className="space-y-3">
+                <Link href="/portfolio/2" className="block p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <h4 className="font-medium text-gray-900 mb-1 text-sm sm:text-base">
+                    Todo App with TypeScript
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    React와 TypeScript로 만든 할 일 관리 앱
+                  </p>
+                </Link>
+                <Link href="/portfolio/3" className="block p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <h4 className="font-medium text-gray-900 mb-1 text-sm sm:text-base">
+                    날씨 앱
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    OpenWeather API를 활용한 날씨 정보 앱
+                  </p>
+                </Link>
               </div>
             </div>
           </div>

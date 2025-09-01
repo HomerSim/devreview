@@ -67,29 +67,30 @@ export default function CreatePortfolioPage() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link href="/feed" className="p-2 hover:bg-gray-100 rounded-lg">
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900">
-                포트폴리오 만들기
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
+                <span className="hidden sm:inline">포트폴리오 만들기</span>
+                <span className="sm:hidden">포트폴리오</span>
               </h1>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={() => handleSubmit(true)}
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base"
               >
                 <Save className="w-4 h-4" />
-                임시저장
+                <span className="hidden sm:inline">임시저장</span>
               </button>
               <button
                 onClick={() => handleSubmit(false)}
-                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                className="flex items-center gap-1 sm:gap-2 bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
               >
                 <Send className="w-4 h-4" />
-                게시하기
+                <span className="hidden sm:inline">게시하기</span>
               </button>
             </div>
           </div>
@@ -99,8 +100,8 @@ export default function CreatePortfolioPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {/* 기본 정보 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">기본 정보</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 sm:mb-6">기본 정보</h2>
             
             <div className="space-y-4">
               <div>
@@ -112,7 +113,7 @@ export default function CreatePortfolioPage() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="예: E-커머스 풀스택 웹사이트"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm sm:text-base"
                 />
               </div>
 
@@ -125,11 +126,11 @@ export default function CreatePortfolioPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="프로젝트를 한 줄로 설명해주세요"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm sm:text-base"
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     GitHub URL *
@@ -139,7 +140,7 @@ export default function CreatePortfolioPage() {
                     value={formData.githubUrl}
                     onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
                     placeholder="https://github.com/username/repository"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm sm:text-base"
                   />
                 </div>
                 
@@ -160,8 +161,8 @@ export default function CreatePortfolioPage() {
           </div>
 
           {/* 기술 스택 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">기술 스택</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 sm:mb-6">기술 스택</h2>
             
             <div className="space-y-4">
               <div>
@@ -170,16 +171,16 @@ export default function CreatePortfolioPage() {
                   value={searchTech}
                   onChange={(e) => setSearchTech(e.target.value)}
                   placeholder="기술 스택을 검색하고 선택하세요"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm sm:text-base"
                 />
                 
                 {searchTech && filteredTechOptions.length > 0 && (
-                  <div className="mt-2 max-h-40 overflow-y-auto bg-white border border-gray-300 rounded-lg">
+                  <div className="mt-2 max-h-40 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
                     {filteredTechOptions.map((tech) => (
                       <button
                         key={tech}
                         onClick={() => addTechStack(tech)}
-                        className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors"
+                        className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors text-sm sm:text-base"
                       >
                         {tech}
                       </button>
@@ -193,14 +194,14 @@ export default function CreatePortfolioPage() {
                   {selectedTechStack.map((tech) => (
                     <span
                       key={tech}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-500 rounded-md"
+                      className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 bg-blue-50 text-blue-500 rounded-md text-sm"
                     >
                       {tech}
                       <button
                         onClick={() => removeTechStack(tech)}
                         className="hover:text-blue-700"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-3 h-3 sm:w-4 sm:h-4" />
                       </button>
                     </span>
                   ))}
@@ -210,8 +211,8 @@ export default function CreatePortfolioPage() {
           </div>
 
           {/* 상세 설명 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">상세 설명</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 sm:mb-6">상세 설명</h2>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -220,11 +221,11 @@ export default function CreatePortfolioPage() {
               <textarea
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                rows={20}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent font-mono text-sm"
+                rows={15}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent font-mono text-xs sm:text-sm"
                 placeholder="Markdown 형식으로 프로젝트를 자세히 설명해주세요"
               />
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-xs sm:text-sm text-gray-500">
                 Markdown 문법을 사용할 수 있습니다. (예: **굵게**, *기울임*, `코드`, ## 제목 등)
               </p>
             </div>

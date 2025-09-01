@@ -132,7 +132,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-100 to-blue-200">
+    <div className="min-h-screen bg-gradient-to-br">
       {/* 네비게이션 */}
       <nav className="bg-white/80 backdrop-blur-sm border-b border-blue-100">
         <div className="max-w-6xl mx-auto px-4">
@@ -140,7 +140,7 @@ export default function ProfilePage() {
             <Link href="/feed" className="text-2xl font-bold text-blue-600">
               DevReview
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-4">
               <Link href="/feed" className="text-gray-600 hover:text-gray-900 font-medium">
                 피드
               </Link>
@@ -155,25 +155,40 @@ export default function ProfilePage() {
                 <span>로그아웃</span>
               </button>
             </div>
+            {/* 모바일 메뉴 */}
+            <div className="md:hidden flex items-center space-x-2">
+              <Link href="/feed" className="p-2 text-gray-600 hover:text-gray-900">
+                <BookOpen className="w-5 h-5" />
+              </Link>
+              <Link href="/portfolio/create" className="p-2 text-gray-600 hover:text-gray-900">
+                <Edit className="w-5 h-5" />
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="p-2 text-gray-600 hover:text-gray-900"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* 프로필 헤더 */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-blue-100 p-6 mb-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-6">
-              <div className="relative">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-blue-100 p-4 md:p-6 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+              <div className="relative flex-shrink-0">
                 {user.image ? (
                   <img
                     src={user.image}
                     alt={user.name}
-                    className="w-24 h-24 rounded-full border-4 border-blue-200"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-blue-200"
                   />
                 ) : (
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-sky-600 rounded-full flex items-center justify-center">
-                    <User className="w-12 h-12 text-white" />
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-500 to-sky-600 rounded-full flex items-center justify-center">
+                    <User className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
                   </div>
                 )}
                 {user.verified && (
@@ -183,33 +198,35 @@ export default function ProfilePage() {
                 )}
               </div>
               
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    user.role === 'JUNIOR' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-purple-100 text-purple-700'
-                  }`}>
-                    {user.role === 'JUNIOR' ? '주니어 개발자' : '시니어 개발자'}
-                  </span>
-                  <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
-                    {user.level}
-                  </span>
+              <div className="flex-1 text-center sm:text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{user.name}</h1>
+                  <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      user.role === 'JUNIOR' 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-purple-100 text-purple-700'
+                    }`}>
+                      {user.role === 'JUNIOR' ? '주니어 개발자' : '시니어 개발자'}
+                    </span>
+                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+                      {user.level}
+                    </span>
+                  </div>
                 </div>
                 
                 <p className="text-gray-600 mb-2">{user.email}</p>
                 
                 {user.bio && (
-                  <p className="text-gray-700 mb-3 max-w-2xl leading-relaxed">{user.bio}</p>
+                  <p className="text-gray-700 mb-3 leading-relaxed text-sm sm:text-base">{user.bio}</p>
                 )}
                 
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                  <div className="flex items-center space-x-1">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 mb-3">
+                  <div className="flex items-center justify-center sm:justify-start space-x-1">
                     <Calendar className="w-4 h-4" />
                     <span>{new Date(user.joinedAt).toLocaleDateString('ko-KR')}부터 활동</span>
                   </div>
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center justify-center sm:justify-start space-x-1">
                     <Clock className="w-4 h-4" />
                     <span>개발 경험 {user.experience}</span>
                   </div>
@@ -217,20 +234,20 @@ export default function ProfilePage() {
                 
                 {user.goals && (
                   <div className="p-3 bg-gradient-to-r from-blue-50 to-sky-50 rounded-lg border border-blue-200">
-                    <div className="flex items-center space-x-2 mb-1">
+                    <div className="flex items-center justify-center sm:justify-start space-x-2 mb-1">
                       <Target className="w-4 h-4 text-blue-600" />
                       <span className="text-sm font-medium text-blue-700">2024년 목표</span>
                     </div>
-                    <p className="text-sm text-blue-600">{user.goals}</p>
+                    <p className="text-sm text-blue-600 text-center sm:text-left">{user.goals}</p>
                   </div>
                 )}
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-row lg:flex-col items-center lg:items-end space-x-2 lg:space-x-0 lg:space-y-2">
               <button
                 onClick={handleRoleSwitch}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium whitespace-nowrap"
               >
                 {user.role === 'JUNIOR' ? '시니어 인증하기' : '주니어로 전환'}
               </button>
@@ -244,11 +261,11 @@ export default function ProfilePage() {
           {/* 기술 스택 */}
           {user.techStack && user.techStack.length > 0 && (
             <div className="mt-4 pt-4 border-t border-blue-100">
-              <div className="flex items-center space-x-2 mb-3">
+              <div className="flex items-center justify-center sm:justify-start space-x-2 mb-3">
                 <Code className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-medium text-blue-700">기술 스택</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                 {user.techStack.map((tech, index) => (
                   <span
                     key={index}
@@ -263,74 +280,74 @@ export default function ProfilePage() {
         </div>
         
         {/* 통계 대시보드 */}
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-blue-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <BookOpen className="w-5 h-5 text-blue-600" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-100 hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+              <div className="p-2 bg-blue-100 rounded-lg mx-auto sm:mx-0">
+                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{SAMPLE_STATS.totalPortfolios}</p>
+              <div className="text-center sm:text-left">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{SAMPLE_STATS.totalPortfolios}</p>
                 <p className="text-xs text-gray-500">포트폴리오</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-blue-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <MessageCircle className="w-5 h-5 text-green-600" />
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-100 hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+              <div className="p-2 bg-green-100 rounded-lg mx-auto sm:mx-0">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{SAMPLE_STATS.totalFeedbacks}</p>
+              <div className="text-center sm:text-left">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{SAMPLE_STATS.totalFeedbacks}</p>
                 <p className="text-xs text-gray-500">받은 피드백</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-blue-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-pink-100 rounded-lg">
-                <Heart className="w-5 h-5 text-pink-600" />
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-100 hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+              <div className="p-2 bg-pink-100 rounded-lg mx-auto sm:mx-0">
+                <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-pink-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{SAMPLE_STATS.totalLikes}</p>
+              <div className="text-center sm:text-left">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{SAMPLE_STATS.totalLikes}</p>
                 <p className="text-xs text-gray-500">받은 좋아요</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-blue-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Eye className="w-5 h-5 text-purple-600" />
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-100 hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+              <div className="p-2 bg-purple-100 rounded-lg mx-auto sm:mx-0">
+                <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{SAMPLE_STATS.totalViews}</p>
+              <div className="text-center sm:text-left">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{SAMPLE_STATS.totalViews}</p>
                 <p className="text-xs text-gray-500">총 조회수</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-blue-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Star className="w-5 h-5 text-yellow-600" />
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-100 hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+              <div className="p-2 bg-yellow-100 rounded-lg mx-auto sm:mx-0">
+                <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{SAMPLE_STATS.avgRating}</p>
+              <div className="text-center sm:text-left">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{SAMPLE_STATS.avgRating}</p>
                 <p className="text-xs text-gray-500">평균 평점</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-blue-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-indigo-100 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-indigo-600" />
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-blue-100 hover:shadow-md transition-shadow">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+              <div className="p-2 bg-indigo-100 rounded-lg mx-auto sm:mx-0">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{SAMPLE_STATS.responseRate}%</p>
+              <div className="text-center sm:text-left">
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{SAMPLE_STATS.responseRate}%</p>
                 <p className="text-xs text-gray-500">응답률</p>
               </div>
             </div>
@@ -339,7 +356,7 @@ export default function ProfilePage() {
 
         {/* 탭 네비게이션 */}
         <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-blue-100 mb-6">
-          <div className="flex border-b border-gray-200">
+          <div className="flex border-b border-gray-200 overflow-x-auto">
             {[
               { id: 'dashboard', label: '대시보드', icon: TrendingUp },
               { id: 'portfolios', label: '내 포트폴리오', icon: BookOpen },
@@ -348,51 +365,51 @@ export default function ProfilePage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
+                className={`flex items-center space-x-2 px-4 sm:px-6 py-4 font-medium transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
               </button>
             ))}
           </div>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {/* 대시보드 탭 */}
             {activeTab === 'dashboard' && (
               <div className="space-y-6">
                 <div className="grid lg:grid-cols-2 gap-6">
                   {/* 최근 활동 */}
-                  <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg p-6 border border-blue-200">
+                  <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg p-4 sm:p-6 border border-blue-200">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">최근 활동</h3>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-3 p-3 bg-white rounded-lg">
-                        <div className="p-2 bg-green-100 rounded-lg">
+                        <div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
                           <CheckCircle className="w-4 h-4 text-green-600" />
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">새 포트폴리오 작성</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate">새 포트폴리오 작성</p>
                           <p className="text-xs text-gray-500">Todo App with TypeScript - 2일 전</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-white rounded-lg">
-                        <div className="p-2 bg-blue-100 rounded-lg">
+                        <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
                           <MessageCircle className="w-4 h-4 text-blue-600" />
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">피드백 받음</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate">피드백 받음</p>
                           <p className="text-xs text-gray-500">E-커머스 프로젝트 - 4일 전</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3 p-3 bg-white rounded-lg">
-                        <div className="p-2 bg-pink-100 rounded-lg">
+                        <div className="p-2 bg-pink-100 rounded-lg flex-shrink-0">
                           <Heart className="w-4 h-4 text-pink-600" />
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">좋아요 받음</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 truncate">좋아요 받음</p>
                           <p className="text-xs text-gray-500">Task Management App - 1주 전</p>
                         </div>
                       </div>
@@ -400,7 +417,7 @@ export default function ProfilePage() {
                   </div>
 
                   {/* 성장 지표 */}
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 sm:p-6 border border-green-200">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">성장 지표</h3>
                     <div className="space-y-4">
                       <div>
@@ -435,9 +452,9 @@ export default function ProfilePage() {
                 </div>
 
                 {/* 추천 학습 경로 */}
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
+                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 sm:p-6 border border-purple-200">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">추천 학습 경로</h3>
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="bg-white rounded-lg p-4 border border-purple-200">
                       <div className="flex items-center space-x-2 mb-2">
                         <BookOpen className="w-5 h-5 text-purple-600" />
@@ -460,7 +477,7 @@ export default function ProfilePage() {
                         <ChevronRight className="w-4 h-4 text-purple-600" />
                       </div>
                     </div>
-                    <div className="bg-white rounded-lg p-4 border border-purple-200">
+                    <div className="bg-white rounded-lg p-4 border border-purple-200 sm:col-span-2 lg:col-span-1">
                       <div className="flex items-center space-x-2 mb-2">
                         <Award className="w-5 h-5 text-purple-600" />
                         <h4 className="font-medium text-gray-900">알고리즘</h4>
@@ -479,11 +496,11 @@ export default function ProfilePage() {
             {/* 포트폴리오 탭 */}
             {activeTab === 'portfolios' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">내 포트폴리오</h3>
                   <Link
                     href="/portfolio/create"
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-center"
                   >
                     새 포트폴리오 작성
                   </Link>
@@ -491,24 +508,26 @@ export default function ProfilePage() {
                 
                 <div className="grid gap-6">
                   {SAMPLE_MY_PORTFOLIOS.map((portfolio) => (
-                    <div key={portfolio.id} className="bg-gradient-to-r from-white to-blue-50 rounded-lg p-6 border border-blue-200 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h4 className="text-lg font-semibold text-gray-900">{portfolio.title}</h4>
-                            <span className={`px-2 py-1 text-xs rounded-full ${
-                              portfolio.status === 'published' 
-                                ? 'bg-green-100 text-green-700' 
-                                : 'bg-yellow-100 text-yellow-700'
-                            }`}>
-                              {portfolio.status === 'published' ? '게시됨' : '임시저장'}
-                            </span>
-                            <div className="flex items-center space-x-1">
-                              <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                              <span className="text-sm font-medium text-gray-700">{portfolio.avgRating}</span>
+                    <div key={portfolio.id} className="bg-gradient-to-r from-white to-blue-50 rounded-lg p-4 sm:p-6 border border-blue-200 hover:shadow-md transition-shadow">
+                      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                            <h4 className="text-lg font-semibold text-gray-900 truncate">{portfolio.title}</h4>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 py-1 text-xs rounded-full ${
+                                portfolio.status === 'published' 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {portfolio.status === 'published' ? '게시됨' : '임시저장'}
+                              </span>
+                              <div className="flex items-center space-x-1">
+                                <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                                <span className="text-sm font-medium text-gray-700">{portfolio.avgRating}</span>
+                              </div>
                             </div>
                           </div>
-                          <p className="text-gray-600 mb-3">{portfolio.description}</p>
+                          <p className="text-gray-600 mb-3 text-sm sm:text-base">{portfolio.description}</p>
                           <div className="flex flex-wrap gap-2 mb-3">
                             {portfolio.techStack.map((tech, index) => (
                               <span
@@ -520,23 +539,23 @@ export default function ProfilePage() {
                             ))}
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2 ml-4">
-                          <Link href={`/portfolio/${portfolio.id}`}>
-                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                              <Eye className="w-4 h-4" />
+                        <div className="flex lg:flex-col items-center lg:items-end gap-2">
+                          <Link href={`/portfolio/${portfolio.id}`} className="flex-1 lg:flex-initial">
+                            <button className="w-full lg:w-auto p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                              <Eye className="w-4 h-4 mx-auto" />
                             </button>
                           </Link>
-                          <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-                            <Edit className="w-4 h-4" />
+                          <button className="flex-1 lg:flex-initial p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                            <Edit className="w-4 h-4 mx-auto" />
                           </button>
-                          <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                            <Trash2 className="w-4 h-4" />
+                          <button className="flex-1 lg:flex-initial p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                            <Trash2 className="w-4 h-4 mx-auto" />
                           </button>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between text-sm text-gray-500 pt-4 border-t border-blue-100">
-                        <div className="flex items-center space-x-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-gray-500 pt-4 border-t border-blue-100">
+                        <div className="flex items-center justify-center sm:justify-start gap-4">
                           <div className="flex items-center space-x-1">
                             <Eye className="w-4 h-4" />
                             <span>{portfolio.views} 조회</span>
@@ -550,7 +569,7 @@ export default function ProfilePage() {
                             <span>{portfolio.likes} 좋아요</span>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-center sm:text-right">
                           <span>작성: {new Date(portfolio.createdAt).toLocaleDateString('ko-KR')}</span>
                           <span>수정: {new Date(portfolio.lastUpdated).toLocaleDateString('ko-KR')}</span>
                         </div>
@@ -564,28 +583,28 @@ export default function ProfilePage() {
             {/* 피드백 탭 */}
             {activeTab === 'feedbacks' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">받은 피드백</h3>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 text-center sm:text-right">
                     총 {SAMPLE_MY_FEEDBACKS.length}개의 피드백
                   </div>
                 </div>
                 
                 <div className="space-y-6">
                   {SAMPLE_MY_FEEDBACKS.map((feedback) => (
-                    <div key={feedback.id} className="bg-gradient-to-r from-white to-green-50 rounded-lg p-6 border border-green-200">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h4 className="text-lg font-semibold text-gray-900">{feedback.portfolioTitle}</h4>
+                    <div key={feedback.id} className="bg-gradient-to-r from-white to-green-50 rounded-lg p-4 sm:p-6 border border-green-200">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                            <h4 className="text-lg font-semibold text-gray-900 truncate">{feedback.portfolioTitle}</h4>
                             {feedback.helpful && (
-                              <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                              <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full w-fit">
                                 도움됨
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center space-x-2 mb-3">
-                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full w-fit">
                               {feedback.authorLevel}
                             </span>
                             <span className="text-sm text-gray-500">
@@ -593,13 +612,13 @@ export default function ProfilePage() {
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-1 ml-4">
+                        <div className="flex items-center space-x-1 sm:ml-4">
                           <Heart className="w-4 h-4 text-pink-500" />
                           <span className="text-sm font-medium text-gray-700">{feedback.likes}</span>
                         </div>
                       </div>
                       
-                      <p className="text-gray-700 mb-4 leading-relaxed">{feedback.content}</p>
+                      <p className="text-gray-700 mb-4 leading-relaxed text-sm sm:text-base">{feedback.content}</p>
                       
                       {feedback.tags && (
                         <div className="flex flex-wrap gap-2 pt-4 border-t border-green-100">

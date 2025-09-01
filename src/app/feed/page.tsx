@@ -61,12 +61,12 @@ export default function FeedPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 lg:gap-8">
               <Link href="/" className="text-2xl font-bold text-blue-600">
                 DevReview
               </Link>
@@ -80,10 +80,10 @@ export default function FeedPage() {
               </nav>
             </div>
             
-            <div className="flex items-center gap-4">
-              <button className="p-2 hover:bg-gray-100 rounded-lg">
+            <div className="flex items-center gap-2 lg:gap-4">
+              <Link href="/profile" className="p-2 hover:bg-gray-100 rounded-lg">
                 <User className="w-5 h-5 text-gray-600" />
-              </button>
+              </Link>
               <button className="md:hidden p-2 hover:bg-gray-100 rounded-lg">
                 <Menu className="w-5 h-5 text-gray-600" />
               </button>
