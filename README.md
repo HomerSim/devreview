@@ -1,42 +1,57 @@
-# DevReview - 포트폴리오 리뷰 플랫폼
+# DevReview - 개발자 포트폴리오 리뷰 플랫폼 (Frontend)
 
-"AI는 줄 수 없는, 시니어의 진짜 피드백으로 취업 관문을 뚫으세요"
+> "AI는 줄 수 없는, 시니어의 진짜 피드백으로 취업 관문을 뚫으세요"
 
-DevReview는 주니어 개발자들이 시니어 개발자들로부터 포트폴리오에 대한 실무 중심의 피드백을 받을 수 있는 플랫폼입니다.
+DevReview는 주니어 개발자들이 시니어 개발자들로부터 포트폴리오에 대한 실무 중심의 피드백을 받을 수 있는 플랫폼의 **프론트엔드**입니다. Next.js 14 기반으로 구축되었으며, 분리된 백엔드 API와 통신합니다.
 
-## 🚀 주요 기능
+## ✨ 주요 기능
 
-### 주니어 개발자를 위한 기능
+### 👶 주니어 개발자를 위한 기능
 - **포트폴리오 업로드**: GitHub URL, 배포 URL과 함께 프로젝트를 상세히 소개
 - **실무 중심 피드백**: 현업 시니어 개발자들로부터 구체적인 개선점 제안
 - **익명 시스템**: 부담 없는 환경에서 솔직한 피드백 교환
 - **기술 스택별 필터링**: 관심 분야의 포트폴리오 및 피드백 확인
 
-### 시니어 개발자를 위한 기능
+### 👨‍💼 시니어 개발자를 위한 기능
 - **포트폴리오 리뷰**: 주니어들의 프로젝트에 전문적인 피드백 제공
 - **개발자 인증 시스템**: LinkedIn 프로필 및 재직증명서를 통한 신원 확인
 - **멘토링 기여**: 개발 커뮤니티 성장에 기여
 
-## 🛠️ 기술 스택
+### � 인증 시스템
+- **SSO 로그인**: Google, GitHub 소셜 로그인만 지원
+- **JWT 토큰**: 백엔드와의 안전한 통신
+- **자동 계정 생성**: 소셜 로그인 시 자동으로 계정 생성
 
-- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
-- **Backend**: Next.js API Routes, Prisma ORM
-- **Database**: PostgreSQL
-- **Authentication**: NextAuth.js (GitHub, Google OAuth)
-- **UI Components**: Lucide React Icons
-- **Markdown**: React Markdown
+## �🛠️ 기술 스택
 
-## 📋 페이지 구조
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS  
+- **HTTP Client**: Fetch API (네이티브)
+- **State Management**: React Context + Hooks
+- **Authentication**: JWT Token 기반
+- **Icons**: Lucide React
+- **UI**: 완전 반응형 디자인
 
-1. **랜딩 페이지** (`/`) - 서비스 소개 및 OAuth 로그인
-2. **역할 선택** (`/role-selection`) - 주니어/시니어 개발자 선택
-3. **메인 피드** (`/feed`) - 포트폴리오 목록 및 필터링
-4. **포트폴리오 생성** (`/portfolio/create`) - 포트폴리오 업로드
-5. **포트폴리오 상세** (`/portfolio/[id]`) - 프로젝트 상세 정보 및 피드백
-6. **시니어 인증** (`/senior/verify`) - 시니어 개발자 인증 신청
-7. **마이페이지** (`/profile`) - 사용자 정보 및 활동 내역
+## � 프로젝트 구조
 
-## 🗄️ 데이터베이스 스키마
+```
+src/
+├── app/                    # Next.js App Router 페이지
+│   ├── auth/              # 인증 관련
+│   │   └── callback/      # SSO 콜백 처리
+│   ├── login/             # 로그인 페이지
+│   ├── layout.tsx         # 전역 레이아웃  
+│   └── page.tsx          # 홈페이지
+├── components/            # 재사용 가능한 컴포넌트
+├── hooks/                # 커스텀 훅
+│   ├── useAuth.tsx       # 인증 상태 관리
+│   └── useData.ts        # 데이터 fetching
+├── lib/                  # 유틸리티 및 설정
+│   └── api.ts           # API 클라이언트
+└── types/               # TypeScript 타입 정의
+    └── api.ts          # API 관련 타입
+```
 
 ```prisma
 model User {
