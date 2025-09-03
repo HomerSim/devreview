@@ -5,7 +5,8 @@ export async function GET(req: NextRequest) {
   const page = searchParams.get("page") || "1";
   const limit = searchParams.get("limit") || "10";
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolios?page=${page}&limit=${limit}`, {
+  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios?page=${page}&limit=${limit}`;
+  const response = await fetch(apiUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -14,6 +15,5 @@ export async function GET(req: NextRequest) {
   });
 
   const data = await response.json();
-
   return NextResponse.json(data);
 }

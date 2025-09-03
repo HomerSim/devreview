@@ -6,86 +6,143 @@ import Link from 'next/link';
 
 const TECH_FILTERS = ['전체', '프론트엔드', '백엔드', '모바일', 'DevOps', 'AI/ML'];
 
-const SAMPLE_PORTFOLIOS = [
+// 🎯 Feed UI에서만 사용하는 필드들만 포함
+interface PortfolioSummary {
+  id: string;
+  category: string;        // 필터링용
+  title: string;          // 카드 제목
+  description: string;    // 카드 설명
+  tech_stack: string[];   // 기술 스택 태그
+  view_count: number;     // 조회수
+  like_count: number;     // 좋아요 수
+  user: {
+    name: string;         // 작성자명
+  };
+}
+
+interface ApiResponse {
+  data: PortfolioSummary[];
+  total: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
+
+// 🎯 Feed UI에 필요한 필드만 포함한 샘플 데이터
+const SAMPLE_PORTFOLIOS: PortfolioSummary[] = [
   {
-    id: 1,
+    id: "sample-1",
+    category: "프론트엔드",
     title: 'E-커머스 풀스택 웹사이트',
     description: 'React와 Node.js로 만든 온라인 쇼핑몰입니다',
-    author: 'Anonymous_Dev_01',
-    techStack: ['React', 'Node.js', 'MongoDB', 'Express'],
-    feedbackCount: 12,
-    likes: 28,
-    category: '프론트엔드'
+    tech_stack: ['React', 'Node.js', 'MongoDB', 'Express'],
+    view_count: 156,
+    like_count: 28,
+    user: {
+      name: 'Anonymous_Dev_01'
+    }
   },
   {
-    id: 2,
+    id: "sample-2",
+    category: "AI/ML",
     title: 'AI 기반 이미지 분류 앱',
     description: 'TensorFlow를 활용한 실시간 이미지 인식 모바일 앱',
-    author: 'Anonymous_Dev_02',
-    techStack: ['React Native', 'TensorFlow', 'Python', 'Firebase'],
-    feedbackCount: 8,
-    likes: 35,
-    category: 'AI/ML'
+    tech_stack: ['React Native', 'TensorFlow', 'Python', 'Firebase'],
+    view_count: 98,
+    like_count: 35,
+    user: {
+      name: 'Anonymous_Dev_02'
+    }
   },
   {
-    id: 3,
+    id: "sample-3",
+    category: "백엔드",
     title: 'MSA 기반 배송 관리 시스템',
     description: '마이크로서비스 아키텍처로 구현한 물류 관리 시스템',
-    author: 'Anonymous_Dev_03',
-    techStack: ['Spring Boot', 'Docker', 'Kubernetes', 'PostgreSQL'],
-    feedbackCount: 15,
-    likes: 42,
-    category: '백엔드'
+    tech_stack: ['Spring Boot', 'Docker', 'Kubernetes', 'PostgreSQL'],
+    view_count: 203,
+    like_count: 42,
+    user: {
+      name: 'Anonymous_Dev_03'
+    }
   },
   {
-    id: 4,
+    id: "sample-4",
+    category: "프론트엔드",
     title: '실시간 채팅 앱',
     description: 'Socket.io를 이용한 실시간 채팅 애플리케이션',
-    author: 'Anonymous_Dev_04',
-    techStack: ['Vue.js', 'Socket.io', 'Redis', 'Node.js'],
-    feedbackCount: 6,
-    likes: 19,
-    category: '프론트엔드'
+    tech_stack: ['Vue.js', 'Socket.io', 'Redis', 'Node.js'],
+    view_count: 87,
+    like_count: 19,
+    user: {
+      name: 'Anonymous_Dev_04'
+    }
+  },
+  {
+    id: "sample-5",
+    category: "모바일",
+    title: '피트니스 트래킹 앱',
+    description: 'React Native로 개발한 개인 운동 기록 관리 앱',
+    tech_stack: ['React Native', 'TypeScript', 'Firebase', 'Redux'],
+    view_count: 124,
+    like_count: 31,
+    user: {
+      name: 'Anonymous_Dev_05'
+    }
+  },
+  {
+    id: "sample-6",
+    category: "DevOps",
+    title: 'CI/CD 파이프라인 구축',
+    description: 'Jenkins와 Docker를 활용한 자동화 배포 시스템',
+    tech_stack: ['Jenkins', 'Docker', 'AWS', 'Terraform'],
+    view_count: 167,
+    like_count: 53,
+    user: {
+      name: 'Anonymous_Dev_06'
+    }
   }
 ];
-
-// async function fetchFeeds () {
-//   console.log(`${process.env.NEXT_PUBLIC_API_URL}`);
-
-//   // 파라미터 page, limit, 
-//   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolios`, {
-//     method: 'GET',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'x-api-key': `${process.env.API_KEY}`
-//     }
-//   });
-
-//   const data = await response.json();
-
-//   console.log(data);
-//   return data;
-// }
-
 
 export default function FeedPage() {
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [searchQuery, setSearchQuery] = useState('');
-
-  const [portfolios, setPortfolios] = useState([]);
+  const [portfolios, setPortfolios] = useState<PortfolioSummary[]>([]);
 
   useEffect(() => {
-
     const fetchPortfolios = async () => {
-      const response = await fetch('/api/portfolios');
-      const data = await response.json();
-      setPortfolios(data);
+      try {
+        const response = await fetch('/api/portfolios');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('🔍 Full API Response:', data);
+        console.log('📊 Portfolio Data:', data.data);
+        console.log('📈 Total Count:', data.total);
+        
+        // ✅ 실제 포트폴리오 배열만 설정
+        if (data.data && data.data.length > 0) {
+          setPortfolios(data.data);
+        } else {
+          // API 데이터가 없으면 샘플 데이터 사용
+          console.log('📝 Using sample data as fallback');
+          setPortfolios(SAMPLE_PORTFOLIOS);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching portfolios:', error);
+        console.log('📝 Using sample data as fallback');
+        // 오류 발생 시 샘플 데이터 사용
+        setPortfolios(SAMPLE_PORTFOLIOS);
+      }
     };
+    
     fetchPortfolios();
   }, []);
 
-
-  const filteredPortfolios = SAMPLE_PORTFOLIOS.filter(portfolio => {
+  const filteredPortfolios = portfolios.filter(portfolio => {
     const matchesFilter = selectedFilter === '전체' || portfolio.category === selectedFilter;
     const matchesSearch = portfolio.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          portfolio.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -172,7 +229,7 @@ export default function FeedPage() {
                 
                 <div className="mb-4">
                   <div className="flex flex-wrap gap-2">
-                    {portfolio.techStack.slice(0, 3).map((tech) => (
+                    {portfolio.tech_stack.slice(0, 3).map((tech: string) => (
                       <span
                         key={tech}
                         className="px-2 py-1 bg-blue-50 text-blue-500 text-xs rounded-md"
@@ -180,24 +237,24 @@ export default function FeedPage() {
                         {tech}
                       </span>
                     ))}
-                    {portfolio.techStack.length > 3 && (
+                    {portfolio.tech_stack.length > 3 && (
                       <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
-                        +{portfolio.techStack.length - 3}
+                        +{portfolio.tech_stack.length - 3}
                       </span>
                     )}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>{portfolio.author}</span>
+                  <span>{portfolio.user.name}</span>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
                       <MessageCircle className="w-4 h-4" />
-                      <span>{portfolio.feedbackCount}</span>
+                      <span>{portfolio.view_count}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Heart className="w-4 h-4" />
-                      <span>{portfolio.likes}</span>
+                      <span>{portfolio.like_count}</span>
                     </div>
                   </div>
                 </div>
