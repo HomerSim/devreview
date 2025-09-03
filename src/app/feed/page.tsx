@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, Filter, Heart, MessageCircle, Plus, User, Menu } from 'lucide-react';
 import Link from 'next/link';
+
+import { fetchFeeds } from '@/action/fetch-feeds';
 
 const TECH_FILTERS = ['전체', '프론트엔드', '백엔드', '모바일', 'DevOps', 'AI/ML'];
 
@@ -49,9 +51,41 @@ const SAMPLE_PORTFOLIOS = [
   }
 ];
 
+// async function fetchFeeds () {
+//   console.log(`${process.env.NEXT_PUBLIC_API_URL}`);
+
+//   // 파라미터 page, limit, 
+//   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolios`, {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'x-api-key': `${process.env.API_KEY}`
+//     }
+//   });
+
+//   const data = await response.json();
+
+//   console.log(data);
+//   return data;
+// }
+
+
 export default function FeedPage() {
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [portfolios, setPortfolios] = useState([]);
+
+  useEffect(() => {
+
+    const fetchPortfolios = async () => {
+      const response = await fetch('/api/portfolios');
+      const data = await response.json();
+      setPortfolios(data);
+    };
+    fetchPortfolios();
+  }, []);
+
 
   const filteredPortfolios = SAMPLE_PORTFOLIOS.filter(portfolio => {
     const matchesFilter = selectedFilter === '전체' || portfolio.category === selectedFilter;
