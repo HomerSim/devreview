@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { Search, Filter, Heart, MessageCircle, Plus, User, Menu } from 'lucide-react';
 import Link from 'next/link';
 
-import { fetchFeeds } from '@/action/fetch-feeds';
-
 const TECH_FILTERS = ['전체', '프론트엔드', '백엔드', '모바일', 'DevOps', 'AI/ML'];
 
 const SAMPLE_PORTFOLIOS = [
