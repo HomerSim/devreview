@@ -1,13 +1,30 @@
 'use client';
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, ExternalLink, Github, Heart, MessageCircle, Send, Star, ThumbsUp } from 'lucide-react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
+import { formatDate, formatRelativeTime } from '@/lib/utils/date';
+
+
+interface PortfolioSummary {
+  id: string;
+  title: string;          // 카드 제목
+  description: string;    // 카드 설명
+  content: string;
+  github_url: string;
+  deploy_url: string;
+  tech_stack: string[];   // 기술 스택 태그
+  view_count: number;     // 조회수
+  like_count: number;     // 좋아요 수
+  created_at: string;
+  user: {
+    name: string;         // 작성자명
+  };
+}
 
 // 샘플 데이터
-const SAMPLE_PORTFOLIO = {
-  id: 1,
+const SAMPLE_PORTFOLIO: PortfolioSummary = {
+  id: "1",
   title: 'E-커머스 풀스택 웹사이트',
   description: 'React와 Node.js로 만든 온라인 쇼핑몰입니다',
   content: `## 프로젝트 소개
@@ -31,13 +48,15 @@ const SAMPLE_PORTFOLIO = {
 - 대용량 트래픽을 처리하기 위한 아키텍처 설계 방법
 - 더 효율적인 데이터베이스 최적화 전략
 - 보안 강화를 위한 추가적인 방법들`,
-  author: 'Anonymous_Dev_01',
-  techStack: ['React', 'Node.js', 'MongoDB', 'Express', 'Redis', 'JWT'],
-  githubUrl: 'https://github.com/example/ecommerce-project',
-  deployUrl: 'https://ecommerce-demo.vercel.app',
-  createdAt: '2024-08-15',
-  feedbackCount: 12,
-  likes: 28
+  github_url: 'https://github.com/example/ecommerce-project',
+  deploy_url: 'https://ecommerce-demo.vercel.app',
+  tech_stack: ['React', 'Node.js', 'MongoDB', 'Express', 'Redis', 'JWT'],
+  view_count: 145,
+  like_count: 28,
+  created_at: '2024-08-15',
+  user: {
+    name: 'Anonymous_Dev_01'
+  }
 };
 
 const SAMPLE_FEEDBACKS = [
@@ -46,7 +65,7 @@ const SAMPLE_FEEDBACKS = [
     author: 'Senior_Dev_A',
     content: '전반적으로 잘 구현된 프로젝트입니다. 특히 동시성 문제를 Redis 분산 락으로 해결한 부분이 인상적입니다. 다만 에러 핸들링 부분을 더 체계적으로 구현하면 좋을 것 같습니다.',
     likes: 15,
-    createdAt: '2024-08-16',
+    createdAt: '2024-08-16T10:30:00.000Z',
     verified: true
   },
   {
@@ -54,15 +73,24 @@ const SAMPLE_FEEDBACKS = [
     author: 'Tech_Mentor_B',
     content: '코드 구조가 깔끔하고 주석도 잘 되어있네요. 테스트 코드 작성도 고려해보시면 더 완성도 높은 프로젝트가 될 것 같습니다.',
     likes: 8,
-    createdAt: '2024-08-17',
+    createdAt: '2024-08-17T14:22:00.000Z',
     verified: true
   }
 ];
 
-export default function PortfolioDetailPage() {
+interface Props {
+  params: { id: string };
+}
+export default function PortfolioDetailPage({ params }: Props) {
+
+  const portfolioId = params.id;
+
   const [newFeedback, setNewFeedback] = useState('');
   const [rating, setRating] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const [portfolio, setPortfolio] = useState<PortfolioSummary>();
 
   const handleSubmitFeedback = () => {
     if (newFeedback.trim()) {
@@ -72,6 +100,67 @@ export default function PortfolioDetailPage() {
       setRating(0);
     }
   };
+
+   useEffect(() => {
+      const fetchPortfolios = async () => {
+
+        if (!portfolioId) return;
+
+        try {
+          setLoading(true);
+          const response = await fetch(`/api/portfolios/${portfolioId}`);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          console.log('🔍 Full API Response:', data);
+          console.log('📊 Portfolio Data:', data.data);
+          console.log('📈 Total Count:', data.total);
+          
+          // ✅ 실제 포트폴리오 배열만 설정
+          if (data.data) {
+            setPortfolio(data.data); // 첫 번째 포트폴리오 사용
+          } else {
+            // API 데이터가 없으면 샘플 데이터 사용
+            console.log('📝 Using sample data as fallback');
+            setPortfolio(SAMPLE_PORTFOLIO);
+          }
+        } catch (error) {
+          console.error('❌ Error fetching portfolios:', error);
+          console.log('📝 Using sample data as fallback');
+          // 오류 발생 시 샘플 데이터 사용
+          setPortfolio(SAMPLE_PORTFOLIO);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchPortfolios();
+    }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!portfolio) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">포트폴리오를 찾을 수 없습니다</h1>
+          <Link href="/feed" className="text-blue-500 hover:text-blue-600">
+            피드로 돌아가기
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -100,20 +189,22 @@ export default function PortfolioDetailPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
               <div className="mb-4 sm:mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                  {SAMPLE_PORTFOLIO.title}
+                  {portfolio?.title}
                 </h1>
                 <p className="text-gray-600 mb-4 text-sm sm:text-base">
-                  {SAMPLE_PORTFOLIO.description}
+                  {portfolio?.description}
                 </p>
                 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500 mb-4">
-                  <span>작성자: {SAMPLE_PORTFOLIO.author}</span>
+                  <span>작성자: {portfolio?.user?.name}</span>
                   <span className="hidden sm:inline">•</span>
-                  <span>{SAMPLE_PORTFOLIO.createdAt}</span>
+                  <span>{portfolio?.created_at ? formatDate(portfolio.created_at) : ''}</span>
+                  <span className="hidden sm:inline">•</span>
+                  <span>{portfolio?.created_at ? formatRelativeTime(portfolio.created_at) : ''}</span>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
-                  {SAMPLE_PORTFOLIO.techStack.map((tech) => (
+                  {portfolio?.tech_stack?.map((tech) => (
                     <span
                       key={tech}
                       className="px-2 py-1 bg-blue-50 text-blue-500 text-xs sm:text-sm rounded-md"
@@ -125,7 +216,7 @@ export default function PortfolioDetailPage() {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   <a
-                    href={SAMPLE_PORTFOLIO.githubUrl}
+                    href={portfolio?.github_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
@@ -133,9 +224,9 @@ export default function PortfolioDetailPage() {
                     <Github className="w-4 h-4" />
                     GitHub
                   </a>
-                  {SAMPLE_PORTFOLIO.deployUrl && (
+                  {portfolio?.deploy_url && (
                     <a
-                      href={SAMPLE_PORTFOLIO.deployUrl}
+                      href={portfolio?.deploy_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
@@ -154,7 +245,7 @@ export default function PortfolioDetailPage() {
                 프로젝트 상세 설명
               </h2>
               <div className="prose max-w-none text-sm sm:text-base">
-                <ReactMarkdown>{SAMPLE_PORTFOLIO.content}</ReactMarkdown>
+                <ReactMarkdown>{portfolio?.content}</ReactMarkdown>
               </div>
             </div>
 
@@ -231,7 +322,7 @@ export default function PortfolioDetailPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-500">
-                        <span>{feedback.createdAt}</span>
+                        <span>{formatRelativeTime(feedback.createdAt)}</span>
                         <div className="flex items-center gap-1">
                           <ThumbsUp className="w-4 h-4" />
                           <span>{feedback.likes}</span>
@@ -256,14 +347,14 @@ export default function PortfolioDetailPage() {
                     <MessageCircle className="w-5 h-5 text-gray-400" />
                     <span className="text-gray-600 text-sm sm:text-base">피드백</span>
                   </div>
-                  <span className="font-semibold">{SAMPLE_PORTFOLIO.feedbackCount}</span>
+                  <span className="font-semibold">{SAMPLE_FEEDBACKS.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Heart className="w-5 h-5 text-gray-400" />
                     <span className="text-gray-600 text-sm sm:text-base">좋아요</span>
                   </div>
-                  <span className="font-semibold">{SAMPLE_PORTFOLIO.likes}</span>
+                  <span className="font-semibold">{portfolio?.like_count || 0}</span>
                 </div>
               </div>
               
