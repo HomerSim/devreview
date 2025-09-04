@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
     req: NextRequest,
-    {params}: { params: { id: string } }
+    {params}: { params: Promise<{ id: string }> }
 ) {
   
     try {
-        const portfolioId = params.id;
+        // ✅ Next.js 15: params를 await 해야 함
+        const { id } = await params;
+        const portfolioId = id;
         const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${portfolioId}`;
         const response = await fetch(apiUrl, {
             method: "GET",
