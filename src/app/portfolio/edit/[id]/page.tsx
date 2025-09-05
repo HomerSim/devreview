@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Save, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 // Components
 import { Input } from '@/components/ui/input';
@@ -44,8 +44,7 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
   
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
-    isDraft: boolean;
-  }>({ isOpen: false, isDraft: false });
+  }>({ isOpen: false });
   
   const [formData, setFormData] = useState<PortfolioFormData>({
     title: '',
@@ -130,28 +129,26 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
   };
 
   // 폼 유효성 검증
-  const validateForm = (isDraft: boolean): boolean => {
+  const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!isDraft) {
-      if (!formData.title.trim()) {
-        newErrors.title = '프로젝트 제목을 입력해주세요';
-      }
-      if (!formData.category) {
-        newErrors.category = '카테고리를 선택해주세요';
-      }
-      if (!formData.description.trim()) {
-        newErrors.description = '한 줄 소개를 입력해주세요';
-      }
-      if (!formData.content.trim()) {
-        newErrors.content = '상세 설명을 입력해주세요';
-      }
-      if (!formData.githubUrl.trim()) {
-        newErrors.githubUrl = 'GitHub URL을 입력해주세요';
-      }
-      if (selectedTechStack.length === 0) {
-        newErrors.techStack = '기술 스택을 최소 1개 이상 선택해주세요';
-      }
+    if (!formData.title.trim()) {
+      newErrors.title = '프로젝트 제목을 입력해주세요';
+    }
+    if (!formData.category) {
+      newErrors.category = '카테고리를 선택해주세요';
+    }
+    if (!formData.description.trim()) {
+      newErrors.description = '한 줄 소개를 입력해주세요';
+    }
+    if (!formData.content.trim()) {
+      newErrors.content = '상세 설명을 입력해주세요';
+    }
+    if (!formData.githubUrl.trim()) {
+      newErrors.githubUrl = 'GitHub URL을 입력해주세요';
+    }
+    if (selectedTechStack.length === 0) {
+      newErrors.techStack = '기술 스택을 최소 1개 이상 선택해주세요';
     }
 
     setErrors(newErrors);
@@ -159,13 +156,13 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
   };
 
   // 확인 모달 열기
-  const openConfirmModal = (isDraft: boolean) => {
-    setConfirmModal({ isOpen: true, isDraft });
+  const openConfirmModal = () => {
+    setConfirmModal({ isOpen: true });
   };
 
   // 확인 모달 닫기
   const closeConfirmModal = () => {
-    setConfirmModal({ isOpen: false, isDraft: false });
+    setConfirmModal({ isOpen: false });
   };
 
   // 실제 제출 처리
@@ -205,14 +202,14 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const handleSubmit = async (isDraft: boolean) => {
-    const isValid = validateForm(isDraft);
+  const handleSubmit = async () => {
+    const isValid = validateForm();
     
     if (!isValid) {
       return;
     }
     
-    openConfirmModal(isDraft);
+    openConfirmModal();
   };
 
   // 로딩 상태
@@ -230,18 +227,7 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
   const headerActions = (
     <>
       <Button
-        variant="ghost"
-        onClick={() => handleSubmit(true)}
-        disabled={isSubmitting}
-        className="gap-1 sm:gap-2"
-      >
-        <Save className="w-4 h-4" />
-        <span className="hidden sm:inline">
-          {isSubmitting ? '저장 중...' : '임시저장'}
-        </span>
-      </Button>
-      <Button
-        onClick={() => handleSubmit(false)}
+        onClick={() => handleSubmit()}
         disabled={isSubmitting}
         className="gap-1 sm:gap-2"
       >
@@ -361,14 +347,9 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
         isOpen={confirmModal.isOpen}
         onClose={closeConfirmModal}
         onConfirm={handleConfirmedSubmit}
-        title={confirmModal.isDraft ? '임시저장 하시겠습니까?' : '포트폴리오를 수정하시겠습니까?'}
-        description={
-          confirmModal.isDraft 
-            ? '작성 중인 내용을 임시저장합니다. 언제든지 다시 편집할 수 있습니다.'
-            : '수정된 내용이 저장되어 다른 사용자들이 볼 수 있습니다. 수정을 완료하시겠습니까?'
-        }
+        title="포트폴리오를 수정하시겠습니까?"
+        description="수정된 내용이 저장되어 다른 사용자들이 볼 수 있습니다. 수정을 완료하시겠습니까?"
         isLoading={isSubmitting}
-        isDraft={confirmModal.isDraft}
       />
     </div>
   );

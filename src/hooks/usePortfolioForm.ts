@@ -65,8 +65,8 @@ export const usePortfolioForm = () => {
   }, []);
 
   // 🎯 유효성 검증만 수행하는 함수 (모달 표시용)
-  const validateForm = useCallback((isDraft: boolean): boolean => {
-    const validation = validatePortfolioForm(formData, selectedTechStack, isDraft);
+  const validateForm = useCallback((): boolean => {
+    const validation = validatePortfolioForm(formData, selectedTechStack);
     
     if (!validation.isValid) {
       setErrors(validation.errors);
@@ -78,8 +78,8 @@ export const usePortfolioForm = () => {
     return true;
   }, [formData, selectedTechStack]);
 
-  const submitForm = useCallback(async (isDraft: boolean): Promise<boolean> => {
-    const validation = validatePortfolioForm(formData, selectedTechStack, isDraft);
+  const submitForm = useCallback(async (): Promise<boolean> => {
+    const validation = validatePortfolioForm(formData, selectedTechStack);
     
     if (!validation.isValid) {
       setErrors(validation.errors);

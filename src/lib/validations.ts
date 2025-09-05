@@ -4,8 +4,7 @@ import { PORTFOLIO_CATEGORIES } from '@/constants/categories';
 
 export const validatePortfolioForm = (
   formData: PortfolioFormData,
-  techStack: string[],
-  isDraft: boolean
+  techStack: string[]
 ): { isValid: boolean; errors: FormErrors } => {
   const errors: FormErrors = {};
 
@@ -14,23 +13,21 @@ export const validatePortfolioForm = (
     errors.category = '카테고리를 선택해주세요.';
   }
 
-  if (!isDraft) {
-    // 필수 필드 검증 (게시할 때만)
-    if (!formData.title.trim()) {
-      errors.title = '프로젝트 제목을 입력해주세요.';
-    }
+  // 필수 필드 검증
+  if (!formData.title.trim()) {
+    errors.title = '프로젝트 제목을 입력해주세요.';
+  }
 
-    if (!formData.description.trim()) {
-      errors.description = '한 줄 소개를 입력해주세요.';
-    }
+  if (!formData.description.trim()) {
+    errors.description = '한 줄 소개를 입력해주세요.';
+  }
 
-    if (!formData.githubUrl.trim()) {
-      errors.githubUrl = 'GitHub URL을 입력해주세요.';
-    }
+  if (!formData.githubUrl.trim()) {
+    errors.githubUrl = 'GitHub URL을 입력해주세요.';
+  }
 
-    if (techStack.length === 0) {
-      errors.techStack = '최소 1개의 기술 스택을 선택해주세요.';
-    }
+  if (techStack.length === 0) {
+    errors.techStack = '최소 1개의 기술 스택을 선택해주세요.';
   }
 
   // URL 형식 검증 (항상)

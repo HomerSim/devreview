@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Save, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 // Components
 import { Input } from '@/components/ui/input';
@@ -22,8 +22,7 @@ import { PORTFOLIO_CATEGORIES } from '@/constants/categories';
 export default function CreatePortfolioPage() {
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
-    isDraft: boolean;
-  }>({ isOpen: false, isDraft: false });
+  }>({ isOpen: false });
   
   const {
     formData,
@@ -38,26 +37,26 @@ export default function CreatePortfolioPage() {
   } = usePortfolioForm();
 
   // 확인 모달 열기
-  const openConfirmModal = (isDraft: boolean) => {
-    setConfirmModal({ isOpen: true, isDraft });
+  const openConfirmModal = () => {
+    setConfirmModal({ isOpen: true });
   };
 
   // 확인 모달 닫기
   const closeConfirmModal = () => {
-    setConfirmModal({ isOpen: false, isDraft: false });
+    setConfirmModal({ isOpen: false });
   };
 
   // 실제 제출 처리
   const handleConfirmedSubmit = async () => {
-    const success = await submitForm(confirmModal.isDraft);
+    const success = await submitForm();
     if (success) {
       closeConfirmModal();
     }
   };
 
-  const handleSubmit = async (isDraft: boolean) => {
+  const handleSubmit = async () => {
     // 1단계: 먼저 유효성 검증 수행
-    const isValid = validateForm(isDraft);
+    const isValid = validateForm();
     
     // 검증 실패 시 확인 모달 없이 바로 종료 (에러는 이미 표시됨)
     if (!isValid) {
@@ -67,24 +66,13 @@ export default function CreatePortfolioPage() {
     
     // 2단계: 검증 통과 시에만 확인 모달 열기
     console.log('✅ 유효성 검증 통과 - 확인 모달 표시');
-    openConfirmModal(isDraft);
+    openConfirmModal();
   };
 
   const headerActions = (
     <>
       <Button
-        variant="ghost"
-        onClick={() => handleSubmit(true)}
-        disabled={isSubmitting}
-        className="gap-1 sm:gap-2"
-      >
-        <Save className="w-4 h-4" />
-        <span className="hidden sm:inline">
-          {isSubmitting ? '저장 중...' : '임시저장'}
-        </span>
-      </Button>
-      <Button
-        onClick={() => handleSubmit(false)}
+        onClick={() => handleSubmit()}
         disabled={isSubmitting}
         className="gap-1 sm:gap-2"
       >
@@ -204,14 +192,9 @@ export default function CreatePortfolioPage() {
         isOpen={confirmModal.isOpen}
         onClose={closeConfirmModal}
         onConfirm={handleConfirmedSubmit}
-        title={confirmModal.isDraft ? '임시저장 하시겠습니까?' : '포트폴리오를 게시하시겠습니까?'}
-        description={
-          confirmModal.isDraft 
-            ? '작성 중인 내용을 임시저장합니다. 언제든지 다시 편집할 수 있습니다.'
-            : '포트폴리오가 게시되어 다른 사용자들이 볼 수 있습니다. 게시하시겠습니까?'
-        }
+        title="포트폴리오를 게시하시겠습니까?"
+        description="포트폴리오가 게시되어 다른 사용자들이 볼 수 있습니다. 게시하시겠습니까?"
         isLoading={isSubmitting}
-        isDraft={confirmModal.isDraft}
       />
     </div>
   );

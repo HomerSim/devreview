@@ -291,13 +291,6 @@ export default function ProfilePage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
                       <h3 className="font-semibold text-gray-900 truncate text-base sm:text-lg">{portfolio.title}</h3>
-                      <span className={`px-2 py-1 text-xs rounded-full w-fit ${
-                        portfolio.status === 'published' 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-yellow-100 text-yellow-700'
-                      }`}>
-                        {portfolio.status === 'published' ? '게시됨' : '임시저장'}
-                      </span>
                     </div>
                     
                     <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm text-gray-500">

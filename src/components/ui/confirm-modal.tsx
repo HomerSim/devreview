@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, FileText, Send } from 'lucide-react';
+import { X, Send } from 'lucide-react';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -10,7 +10,6 @@ interface ConfirmModalProps {
   title: string;
   description: string;
   isLoading?: boolean;
-  isDraft?: boolean;
 }
 
 export function ConfirmModal({ 
@@ -19,8 +18,7 @@ export function ConfirmModal({
   onConfirm, 
   title, 
   description, 
-  isLoading = false,
-  isDraft = false 
+  isLoading = false
 }: ConfirmModalProps) {
   if (!isOpen) return null;
 
@@ -37,11 +35,7 @@ export function ConfirmModal({
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            {isDraft ? (
-              <FileText className="w-5 h-5 text-blue-600" />
-            ) : (
-              <Send className="w-5 h-5 text-green-600" />
-            )}
+            <Send className="w-5 h-5 text-green-600" />
             <h3 className="text-lg font-semibold text-gray-900">
               {title}
             </h3>
@@ -72,13 +66,9 @@ export function ConfirmModal({
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className={`px-4 py-2 text-white rounded-md transition-colors disabled:opacity-50 ${
-              isDraft 
-                ? 'bg-blue-600 hover:bg-blue-700' 
-                : 'bg-green-600 hover:bg-green-700'
-            }`}
+            className="px-4 py-2 text-white rounded-md transition-colors disabled:opacity-50 bg-green-600 hover:bg-green-700"
           >
-            {isLoading ? '처리 중...' : (isDraft ? '임시저장' : '게시하기')}
+            {isLoading ? '처리 중...' : '게시하기'}
           </button>
         </div>
       </div>
