@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
+import { usePortfolioLike, usePortfolioStore } from '@/stores/portfolioStore';
 
 interface LikeButtonProps {
   portfolioId: string;
@@ -10,9 +11,19 @@ interface LikeButtonProps {
 }
 
 export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = false }: LikeButtonProps) {
-  const [isLiked, setIsLiked] = useState(initialIsLiked);
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // 🎯 Zustand에서 상태 가져오기
+  const { likeCount, isLiked } = usePortfolioLike(portfolioId);
+  
+  // 🎯 개별 액션들을 직접 가져오기 (객체 생성 방지)
+  const initializePortfolio = usePortfolioStore((state) => state.initializePortfolio);
+  const updateLikeStatus = usePortfolioStore((state) => state.updateLikeStatus);
+  
+  // 🎯 컴포넌트 마운트 시 초기 데이터로 스토어 초기화
+  useEffect(() => {
+    initializePortfolio(portfolioId, initialLikeCount, initialIsLiked);
+  }, [portfolioId, initialLikeCount, initialIsLiked, initializePortfolio]);
 
   const handleLike = async () => {
     if (isLoading) return;
@@ -20,10 +31,10 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
     const originalIsLiked = isLiked;
     const originalLikeCount = likeCount;
 
-    // 🎯 Optimistic UI: 즉시 상태 변경
+    // 🎯 Optimistic UI: Zustand 스토어에서 즉시 상태 변경
     const newIsLiked = !isLiked;
-    setIsLiked(newIsLiked);
-    setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+    const newLikeCount = newIsLiked ? likeCount + 1 : likeCount - 1;
+    updateLikeStatus(portfolioId, newLikeCount, newIsLiked);
     setIsLoading(true);
 
     try {
@@ -31,11 +42,12 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
       const apiUrl = `/api/portfolios/${portfolioId}/like`;
       
       // 🔍 요청 정보 로깅
-      console.log('🚀 Sending like request:', {
+      console.log('🚀 Sending like request (Zustand):', {
         method,
         url: apiUrl,
         portfolioId,
         newIsLiked,
+        newLikeCount,
         timestamp: new Date().toISOString()
       });
       
@@ -55,7 +67,7 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
 
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Like action success:', data);
+        console.log('✅ Like action success (Zustand):', data);
         console.log('🔍 Server response data:', {
           like_count: data.like_count,
           is_liked: data.is_liked,
@@ -64,14 +76,12 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
           expectedIsLiked: newIsLiked
         });
         
-        // 🎯 서버에서 받은 정확한 좋아요 수로 업데이트
+        // 🎯 서버에서 받은 정확한 좋아요 수로 Zustand 업데이트
         if (data.like_count !== undefined) {
-          setLikeCount(data.like_count);
+          updateLikeStatus(portfolioId, data.like_count, data.is_liked !== undefined ? data.is_liked : newIsLiked);
         }
         
-        // 🎯 서버에서 is_liked를 보내지 않으므로 Optimistic UI 상태 유지
-        // (상세조회할 때만 is_liked가 제공됨)
-        console.log('✅ Optimistic UI 상태 유지 - isLiked:', newIsLiked);
+        console.log('✅ Zustand 상태 업데이트 완료');
       } else {
         // 🔍 더 자세한 에러 정보 로깅
         console.error('❌ Like action failed - Status:', response.status);
@@ -84,13 +94,12 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
         });
         console.error('❌ Like action failed - Error Data:', errorData);
         
-        // 실패 시 원래 상태로 복원
-        console.log('❌ API 실패 - 상태 롤백:', {
+        // 실패 시 원래 상태로 복원 (Zustand)
+        console.log('❌ API 실패 - Zustand 상태 롤백:', {
           from: { isLiked: isLiked, likeCount: likeCount },
           to: { isLiked: originalIsLiked, likeCount: originalLikeCount }
         });
-        setIsLiked(originalIsLiked);
-        setLikeCount(originalLikeCount);
+        updateLikeStatus(portfolioId, originalLikeCount, originalIsLiked);
         
         if (response.status === 401) {
           alert('로그인이 필요합니다.');
@@ -109,13 +118,12 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
         timestamp: new Date().toISOString()
       });
       
-      // 실패 시 원래 상태로 복원
-      console.log('❌ 네트워크 에러 - 상태 롤백:', {
+      // 실패 시 원래 상태로 복원 (Zustand)
+      console.log('❌ 네트워크 에러 - Zustand 상태 롤백:', {
         from: { isLiked: isLiked, likeCount: likeCount },
         to: { isLiked: originalIsLiked, likeCount: originalLikeCount }
       });
-      setIsLiked(originalIsLiked);
-      setLikeCount(originalLikeCount);
+      updateLikeStatus(portfolioId, originalLikeCount, originalIsLiked);
       
       if (error instanceof Error) {
         alert(`네트워크 오류: ${error.message}`);

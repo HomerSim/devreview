@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { PortfolioFormData, FormErrors, PortfolioSubmission } from '@/types/portfolio';
+import { useRouter } from 'next/navigation';
+import { PortfolioFormData, FormErrors } from '@/types/portfolio';
 import { validatePortfolioForm } from '@/lib/validations';
 
 const MARKDOWN_TEMPLATE = `## 프로젝트 소개
@@ -17,12 +18,15 @@ const MARKDOWN_TEMPLATE = `## 프로젝트 소개
 시니어 개발자에게 특별히 피드백받고 싶은 부분이 있다면 적어주세요.`;
 
 export const usePortfolioForm = () => {
+  const router = useRouter();
     
   const [formData, setFormData] = useState<PortfolioFormData>({
+    category: 'WEB',
     title: '',
     description: '',
     githubUrl: '',
     deployUrl: '',
+    techStack: [],
     content: MARKDOWN_TEMPLATE
   });
 
@@ -72,27 +76,38 @@ export const usePortfolioForm = () => {
     setErrors({});
 
     try {
-      const portfolioData: PortfolioSubmission = {
-        ...formData,
-        techStack: selectedTechStack,
-        isDraft
+      // 🔄 백엔드 API 형식으로 변환 (camelCase → snake_case)
+      const portfolioData = {
+        category: formData.category,
+        title: formData.title,
+        description: formData.description,
+        content: formData.content,
+        github_url: formData.githubUrl,    // camelCase → snake_case
+        deploy_url: formData.deployUrl,    // camelCase → snake_case
+        tech_stack: selectedTechStack,     // camelCase → snake_case
       };
 
-      console.log(isDraft ? '임시저장:' : '게시:', portfolioData);
+      console.log('🚀 Creating portfolio with data:', portfolioData);
 
-      // TODO: API 호출
-      // const response = await fetch('/api/portfolio', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(portfolioData),
-      // });
-      
-      // if (!response.ok) throw new Error('제출에 실패했습니다.');
+      // ✅ Next.js API Route 사용 (api/portfolios/route.ts의 POST)
+      const response = await fetch('/api/portfolios', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(portfolioData),
+      });
 
-      // 임시 성공 시뮬레이션
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Response:', response);
+
+      if (!response.ok) throw new Error('제출에 실패했습니다.');
+
+      // 성공 시 피드 페이지로 리디렉션
+      const result = await response.json();
+      console.log('✅ 포트폴리오 등록 성공:', result);
       
-      alert(isDraft ? '임시저장되었습니다!' : '포트폴리오가 게시되었습니다!');
+      // 피드 페이지로 부드럽게 이동
+      router.push('/feed');
       return true;
 
     } catch (error) {

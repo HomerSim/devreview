@@ -1,19 +1,30 @@
+// 🎯 프론트엔드용 폼 데이터 (camelCase)
 export interface PortfolioFormData {
+  category: string;
   title: string;
   description: string;
+  content: string;
   githubUrl: string;
   deployUrl: string;
+  techStack: string[];
+}
+
+// 🎯 백엔드 API 요청용 타입 (snake_case)
+export interface PortfolioApiRequest {
+  category: string;
+  title: string;
+  description: string;
   content: string;
+  github_url: string;
+  deploy_url: string;
+  tech_stack: string[];
 }
 
 export interface FormErrors {
   [key: string]: string;
 }
 
-export interface PortfolioSubmission extends PortfolioFormData {
-  techStack: string[];
-  isDraft: boolean;
-}
+// ✅ PortfolioSubmission 제거 - PortfolioFormData로 통합
 
 // 포트폴리오 상세 정보 타입
 export interface PortfolioDetail {

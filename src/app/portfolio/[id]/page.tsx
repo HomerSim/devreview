@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import { PortfolioDetail } from '@/types/portfolio';
 import { formatDate, formatRelativeTime } from '@/lib/utils/date';
 import { FeedbackSection } from '@/components/portfolio/FeedbackSection';
-import { LikeButton } from './components/LikeButton';
+import { PortfolioSidebar } from './components/PortfolioSidebar';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -95,13 +95,6 @@ export default async function PortfolioDetailPage({ params }: Props) {
     notFound();
   }
 
-  console.log('🎯 LikeButton 초기값:', {
-    portfolioId: portfolio.id,
-    initialLikeCount: portfolio.like_count,
-    initialIsLiked: portfolio.is_liked,
-    fallbackValue: portfolio.is_liked || false
-  });
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -135,7 +128,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
             <FeedbackSection portfolioId={portfolio.id} />
           </div>
 
-          {/* 사이드바 */}
+          {/* 사이드바 - Zustand로 실시간 좋아요 수 공유 */}
           <PortfolioSidebar portfolio={portfolio} />
         </div>
       </main>
@@ -210,63 +203,6 @@ function PortfolioContent({ content }: { content: string }) {
       </h2>
       <div className="prose max-w-none text-sm sm:text-base prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700">
         <ReactMarkdown>{content}</ReactMarkdown>
-      </div>
-    </div>
-  );
-}
-
-// 🎯 사이드바 컴포넌트  
-function PortfolioSidebar({ portfolio }: { portfolio: PortfolioDetail }) {
-  return (
-    <div className="space-y-6">
-      {/* 통계 */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">통계</h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-gray-400" />
-              <span className="text-gray-600 text-sm sm:text-base">조회수</span>
-            </div>
-            <span className="font-semibold">{portfolio.view_count}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-gray-400" />
-              <span className="text-gray-600 text-sm sm:text-base">좋아요</span>
-            </div>
-            <span className="font-semibold">{portfolio.like_count}</span>
-          </div>
-        </div>
-        
-        <LikeButton 
-          portfolioId={portfolio.id} 
-          initialLikeCount={portfolio.like_count}
-          initialIsLiked={portfolio.is_liked || false}
-        />
-      </div>
-
-      {/* 관련 프로젝트 */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">관련 프로젝트</h3>
-        <div className="space-y-3">
-          <Link href="/portfolio/sample-2" className="block p-3 rounded-lg hover:bg-gray-50 transition-colors">
-            <h4 className="font-medium text-gray-900 mb-1 text-sm sm:text-base">
-              AI 기반 이미지 분류 앱
-            </h4>
-            <p className="text-xs sm:text-sm text-gray-600">
-              TensorFlow를 활용한 실시간 이미지 인식 모바일 앱
-            </p>
-          </Link>
-          <Link href="/portfolio/sample-3" className="block p-3 rounded-lg hover:bg-gray-50 transition-colors">
-            <h4 className="font-medium text-gray-900 mb-1 text-sm sm:text-base">
-              MSA 기반 배송 관리 시스템
-            </h4>
-            <p className="text-xs sm:text-sm text-gray-600">
-              마이크로서비스 아키텍처로 구현한 물류 관리 시스템
-            </p>
-          </Link>
-        </div>
       </div>
     </div>
   );
