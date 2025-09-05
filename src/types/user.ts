@@ -47,6 +47,7 @@ export interface UserPortfoliosApiResponse {
     user_id: string;
     view_count: number;
     like_count: number;
+    feedback_count: number; // 피드백 개수 추가
     created_at: string;
     updated_at: string;
     user: {
@@ -75,6 +76,7 @@ export interface UserPortfolio {
   deployUrl: string | null;
   viewCount: number;
   likeCount: number;
+  feedbackCount: number; // 피드백 개수 추가
   createdAt: string;
   updatedAt: string;
   status: 'published'; // 백엔드에서 받아온 데이터는 모두 게시됨 상태로 처리

@@ -36,6 +36,7 @@ export const useUserProfile = () => {
       deployUrl: portfolio.deploy_url,
       viewCount: portfolio.view_count,
       likeCount: portfolio.like_count,
+      feedbackCount: portfolio.feedback_count, // 피드백 개수 추가
       createdAt: portfolio.created_at,
       updatedAt: portfolio.updated_at,
       status: 'published' as const // 백엔드에서 받아온 데이터는 모두 게시됨 상태
@@ -131,6 +132,36 @@ export const useUserProfile = () => {
     loadProfileData();
   }, []);
 
+  // 🎯 포트폴리오 삭제
+  const deletePortfolio = async (portfolioId: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`/api/portfolios/${portfolioId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || '포트폴리오 삭제에 실패했습니다.');
+      }
+
+      // 삭제 성공 시 로컬 상태에서도 제거
+      setPortfolios(prev => prev.filter(p => p.id !== portfolioId));
+      
+      // 사용자 프로필의 포트폴리오 개수 업데이트
+      if (user) {
+        setUser(prev => prev ? {
+          ...prev,
+          portfolioCount: Math.max(0, prev.portfolioCount - 1)
+        } : null);
+      }
+
+      return true;
+    } catch (err) {
+      console.error('❌ Delete portfolio error:', err);
+      throw err;
+    }
+  };
+
   return {
     user,
     portfolios,
@@ -138,6 +169,7 @@ export const useUserProfile = () => {
     error,
     refetchProfile: fetchUserProfile,
     refetchPortfolios: fetchUserPortfolios,
+    deletePortfolio,
     handleRoleSwitch,
   };
 };

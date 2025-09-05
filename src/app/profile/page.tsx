@@ -1,15 +1,60 @@
 'use client';
 
-import { User, Settings, LogOut, Edit, Eye, Plus, Calendar, BookOpen, MessageCircle, Heart } from 'lucide-react';
+import { useState } from 'react';
+import { User, Settings, LogOut, Edit, Eye, Plus, Calendar, BookOpen, MessageCircle, Heart, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 
 export default function ProfilePage() {
-  const { user, portfolios, isLoading, error, handleRoleSwitch } = useUserProfile();
+  const { user, portfolios, isLoading, error, handleRoleSwitch, deletePortfolio } = useUserProfile();
+  
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    portfolioId?: string;
+    portfolioTitle?: string;
+    feedbackCount?: number;
+    isDeleting?: boolean;
+  }>({ isOpen: false });
 
   const handleLogout = () => {
     // TODO: 실제 로그아웃 로직
     console.log('Logout');
+  };
+
+  // 삭제 버튼 클릭 처리
+  const handleDeleteClick = (portfolioId: string, portfolioTitle: string, feedbackCount: number) => {
+    setDeleteModal({
+      isOpen: true,
+      portfolioId,
+      portfolioTitle,
+      feedbackCount,
+      isDeleting: false
+    });
+  };
+
+  // 삭제 확인 처리
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.portfolioId) return;
+
+    try {
+      setDeleteModal(prev => ({ ...prev, isDeleting: true }));
+      
+      await deletePortfolio(deleteModal.portfolioId);
+      
+      // 모달 닫기
+      setDeleteModal({ isOpen: false });
+      
+    } catch (err) {
+      console.error('Delete portfolio failed:', err);
+      // 에러 처리는 여기서 할 수 있지만, 일단 모달은 열어둠
+      setDeleteModal(prev => ({ ...prev, isDeleting: false }));
+    }
+  };
+
+  // 모달 닫기
+  const handleDeleteCancel = () => {
+    setDeleteModal({ isOpen: false });
   };
 
   if (isLoading) {
@@ -270,7 +315,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <MessageCircle className="w-4 h-4" />
-                        <span>0</span>
+                        <span>{portfolio.feedbackCount}</span>
                       </div>
                     </div>
                   </div>
@@ -286,6 +331,13 @@ export default function ProfilePage() {
                         <Edit className="w-4 h-4" />
                       </button>
                     </Link>
+                    <button 
+                      onClick={() => handleDeleteClick(portfolio.id, portfolio.title, portfolio.feedbackCount)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="삭제"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -313,6 +365,18 @@ export default function ProfilePage() {
           )}
         </div>
       </main>
+      
+      {/* 삭제 확인 모달 */}
+      <DeleteConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="포트폴리오 삭제"
+        message="삭제된 포트폴리오는 복구할 수 없습니다."
+        portfolioTitle={deleteModal.portfolioTitle}
+        feedbackCount={deleteModal.feedbackCount || 0}
+        isLoading={deleteModal.isDeleting || false}
+      />
     </div>
   );
 }

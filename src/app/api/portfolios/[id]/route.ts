@@ -88,19 +88,15 @@ export async function DELETE(
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY || '',
-        // 🔄 캐시 무효화 헤더들
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
       },
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("❌ Unlike API error:", errorData);
+      console.error("❌ Portfolio delete API error:", errorData);
       
       return NextResponse.json({ 
-        error: errorData.detail || 'Failed to unlike portfolio',
+        error: errorData.detail || 'Failed to delete portfolio',
         status: response.status 
       }, { 
         status: response.status 
@@ -108,18 +104,10 @@ export async function DELETE(
     }
 
     const data = await response.json();
-    
-    // 🚨 캐시 방지 헤더와 함께 응답  
-    return NextResponse.json(data, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      },
-    });
+    return NextResponse.json(data);
     
   } catch (error) {
-    console.error("Unlike portfolio error:", error);
+    console.error("Delete portfolio error:", error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -23,9 +23,9 @@ export interface Portfolio {
   updatedAt: string;
   author: User;
   feedbacks: Feedback[];
-  feedbackCount?: number;
-  likes?: number;
-  views?: number;
+  feedbackCount: number; // 필수 필드로 변경
+  likes: number; // 필수 필드로 변경
+  views: number; // 필수 필드로 변경
 }
 
 export interface Feedback {
