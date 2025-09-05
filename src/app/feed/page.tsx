@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Search, Filter, Heart, MessageCircle, Plus, User, Menu } from 'lucide-react';
 import Link from 'next/link';
-
-const TECH_FILTERS = ['전체', '프론트엔드', '백엔드', '모바일', 'DevOps', 'AI/ML'];
+import { TECH_CATEGORIES } from '@/constants/categories';
 
 // 🎯 Feed UI에서만 사용하는 필드들만 포함
 interface PortfolioSummary {
@@ -198,14 +197,14 @@ export default function FeedPage() {
 
         {/* Filter Tabs */}
         <div className="mb-8">
-          <div className="flex gap-2 overflow-x-auto">
-            {TECH_FILTERS.map((filter) => (
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+            {TECH_CATEGORIES.map((filter) => (
               <button
                 key={filter}
                 onClick={() => setSelectedFilter(filter)}
-                className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors flex-shrink-0 ${
                   selectedFilter === filter
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-blue-500 text-white shadow-sm'
                     : 'bg-white text-gray-600 hover:bg-blue-50 border border-blue-100'
                 }`}
               >

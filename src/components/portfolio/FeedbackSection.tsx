@@ -91,13 +91,8 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
           setTotalPages(totalPages);
           setCurrentPage(page);
           setHasMoreData(page < totalPages);
-        } else {
-          if (!isAppend) {
-            console.log('📝 Using sample feedback data');
-            setFeedbacks(SAMPLE_FEEDBACKS);
-            setHasMoreData(false);
-          }
         }
+        
       } else {
         if (!isAppend) {
           console.log('📝 Using sample feedback data due to API error');

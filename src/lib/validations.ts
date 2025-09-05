@@ -1,5 +1,6 @@
 import { PortfolioFormData, FormErrors } from '@/types/portfolio';
 import { isValidUrl } from '@/lib/utils';
+import { PORTFOLIO_CATEGORIES } from '@/constants/categories';
 
 export const validatePortfolioForm = (
   formData: PortfolioFormData,
@@ -7,6 +8,11 @@ export const validatePortfolioForm = (
   isDraft: boolean
 ): { isValid: boolean; errors: FormErrors } => {
   const errors: FormErrors = {};
+
+  // 카테고리 검증 (항상 필수)
+  if (!formData.category || !PORTFOLIO_CATEGORIES.includes(formData.category)) {
+    errors.category = '카테고리를 선택해주세요.';
+  }
 
   if (!isDraft) {
     // 필수 필드 검증 (게시할 때만)

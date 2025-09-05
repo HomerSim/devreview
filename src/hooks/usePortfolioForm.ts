@@ -21,7 +21,7 @@ export const usePortfolioForm = () => {
   const router = useRouter();
     
   const [formData, setFormData] = useState<PortfolioFormData>({
-    category: 'WEB',
+    category: '프론트엔드', // 기본값을 '프론트엔드'로 변경
     title: '',
     description: '',
     githubUrl: '',
@@ -63,6 +63,20 @@ export const usePortfolioForm = () => {
   const removeTechStack = useCallback((tech: string) => {
     setSelectedTechStack(prev => prev.filter(t => t !== tech));
   }, []);
+
+  // 🎯 유효성 검증만 수행하는 함수 (모달 표시용)
+  const validateForm = useCallback((isDraft: boolean): boolean => {
+    const validation = validatePortfolioForm(formData, selectedTechStack, isDraft);
+    
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return false;
+    }
+
+    // 검증 통과 시 에러 클리어
+    setErrors({});
+    return true;
+  }, [formData, selectedTechStack]);
 
   const submitForm = useCallback(async (isDraft: boolean): Promise<boolean> => {
     const validation = validatePortfolioForm(formData, selectedTechStack, isDraft);
@@ -127,6 +141,7 @@ export const usePortfolioForm = () => {
     updateFormData,
     addTechStack,
     removeTechStack,
+    validateForm,
     submitForm
   };
 };

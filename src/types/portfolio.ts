@@ -1,6 +1,8 @@
+import { PortfolioCategory } from '@/constants/categories';
+
 // 🎯 프론트엔드용 폼 데이터 (camelCase)
 export interface PortfolioFormData {
-  category: string;
+  category: PortfolioCategory;
   title: string;
   description: string;
   content: string;

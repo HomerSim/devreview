@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Save, Send } from 'lucide-react';
 
 // Components
@@ -8,13 +8,22 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { CategorySelect } from '@/components/ui/category-select';
 import { TechStackSelector } from '@/components/tech-stack-selector';
 import { PageHeader } from '@/components/page-header';
+import { ConfirmModal } from '@/components/ui/confirm-modal';
 
 // Hooks
 import { usePortfolioForm } from '@/hooks/usePortfolioForm';
 
+// Constants
+import { PORTFOLIO_CATEGORIES } from '@/constants/categories';
+
 export default function CreatePortfolioPage() {
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    isDraft: boolean;
+  }>({ isOpen: false, isDraft: false });
   
   const {
     formData,
@@ -24,15 +33,41 @@ export default function CreatePortfolioPage() {
     updateFormData,
     addTechStack,
     removeTechStack,
+    validateForm,
     submitForm
   } = usePortfolioForm();
 
-  const handleSubmit = async (isDraft: boolean) => {
-    const success = await submitForm(isDraft);
+  // 확인 모달 열기
+  const openConfirmModal = (isDraft: boolean) => {
+    setConfirmModal({ isOpen: true, isDraft });
+  };
+
+  // 확인 모달 닫기
+  const closeConfirmModal = () => {
+    setConfirmModal({ isOpen: false, isDraft: false });
+  };
+
+  // 실제 제출 처리
+  const handleConfirmedSubmit = async () => {
+    const success = await submitForm(confirmModal.isDraft);
     if (success) {
-      // TODO: Navigate to portfolio list or detail page
-      // router.push('/feed');
+      closeConfirmModal();
     }
+  };
+
+  const handleSubmit = async (isDraft: boolean) => {
+    // 1단계: 먼저 유효성 검증 수행
+    const isValid = validateForm(isDraft);
+    
+    // 검증 실패 시 확인 모달 없이 바로 종료 (에러는 이미 표시됨)
+    if (!isValid) {
+      console.log('❌ 유효성 검증 실패 - 모달 표시 안함');
+      return;
+    }
+    
+    // 2단계: 검증 통과 시에만 확인 모달 열기
+    console.log('✅ 유효성 검증 통과 - 확인 모달 표시');
+    openConfirmModal(isDraft);
   };
 
   const headerActions = (
@@ -79,6 +114,17 @@ export default function CreatePortfolioPage() {
             </h2>
             
             <div className="space-y-6">
+              {/* 카테고리 선택 */}
+              <CategorySelect
+                value={formData.category}
+                onChange={(category) => updateFormData({ category })}
+                options={PORTFOLIO_CATEGORIES}
+                label="카테고리"
+                placeholder="카테고리를 선택하세요"
+                error={errors.category}
+                required
+              />
+
               <Input
                 label="프로젝트 제목"
                 required
@@ -152,6 +198,21 @@ export default function CreatePortfolioPage() {
           </Card>
         </div>
       </main>
+
+      {/* 확인 모달 */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={closeConfirmModal}
+        onConfirm={handleConfirmedSubmit}
+        title={confirmModal.isDraft ? '임시저장 하시겠습니까?' : '포트폴리오를 게시하시겠습니까?'}
+        description={
+          confirmModal.isDraft 
+            ? '작성 중인 내용을 임시저장합니다. 언제든지 다시 편집할 수 있습니다.'
+            : '포트폴리오가 게시되어 다른 사용자들이 볼 수 있습니다. 게시하시겠습니까?'
+        }
+        isLoading={isSubmitting}
+        isDraft={confirmModal.isDraft}
+      />
     </div>
   );
 }
