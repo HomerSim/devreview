@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Search, Filter, Heart, MessageCircle, Plus, User, Menu } from 'lucide-react';
+import { Search, Filter, Heart, MessageCircle, Plus, User, Menu, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { TECH_CATEGORIES } from '@/constants/categories';
 
@@ -14,6 +14,7 @@ interface PortfolioSummary {
   tech_stack: string[];   // 기술 스택 태그
   view_count: number;     // 조회수
   like_count: number;     // 좋아요 수
+  feedback_count: number; // 피드백 개수
   user: {
     name: string;         // 작성자명
   };
@@ -37,6 +38,7 @@ const SAMPLE_PORTFOLIOS: PortfolioSummary[] = [
     tech_stack: ['React', 'Node.js', 'MongoDB', 'Express'],
     view_count: 156,
     like_count: 28,
+    feedback_count: 5,
     user: {
       name: 'Anonymous_Dev_01'
     }
@@ -49,6 +51,7 @@ const SAMPLE_PORTFOLIOS: PortfolioSummary[] = [
     tech_stack: ['React Native', 'TensorFlow', 'Python', 'Firebase'],
     view_count: 98,
     like_count: 35,
+    feedback_count: 12,
     user: {
       name: 'Anonymous_Dev_02'
     }
@@ -61,6 +64,7 @@ const SAMPLE_PORTFOLIOS: PortfolioSummary[] = [
     tech_stack: ['Spring Boot', 'Docker', 'Kubernetes', 'PostgreSQL'],
     view_count: 203,
     like_count: 42,
+    feedback_count: 8,
     user: {
       name: 'Anonymous_Dev_03'
     }
@@ -73,6 +77,7 @@ const SAMPLE_PORTFOLIOS: PortfolioSummary[] = [
     tech_stack: ['Vue.js', 'Socket.io', 'Redis', 'Node.js'],
     view_count: 87,
     like_count: 19,
+    feedback_count: 3,
     user: {
       name: 'Anonymous_Dev_04'
     }
@@ -85,6 +90,7 @@ const SAMPLE_PORTFOLIOS: PortfolioSummary[] = [
     tech_stack: ['React Native', 'TypeScript', 'Firebase', 'Redux'],
     view_count: 124,
     like_count: 31,
+    feedback_count: 7,
     user: {
       name: 'Anonymous_Dev_05'
     }
@@ -97,6 +103,7 @@ const SAMPLE_PORTFOLIOS: PortfolioSummary[] = [
     tech_stack: ['Jenkins', 'Docker', 'AWS', 'Terraform'],
     view_count: 167,
     like_count: 53,
+    feedback_count: 15,
     user: {
       name: 'Anonymous_Dev_06'
     }
@@ -246,14 +253,18 @@ export default function FeedPage() {
 
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <span>{portfolio.user.name}</span>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1" title="피드백 개수">
                       <MessageCircle className="w-4 h-4" />
-                      <span>{portfolio.view_count}</span>
+                      <span>{portfolio.feedback_count}</span>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1" title="좋아요 개수">
                       <Heart className="w-4 h-4" />
                       <span>{portfolio.like_count}</span>
+                    </div>
+                    <div className="flex items-center gap-1" title="조회수">
+                      <Eye className="w-4 h-4" />
+                      <span>{portfolio.view_count}</span>
                     </div>
                   </div>
                 </div>

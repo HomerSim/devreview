@@ -61,29 +61,6 @@ export function PortfolioSidebar({ portfolio }: PortfolioSidebarProps) {
           initialIsLiked={portfolio.is_liked || false}
         />
       </div>
-
-      {/* 관련 프로젝트 */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">관련 프로젝트</h3>
-        <div className="space-y-3">
-          <Link href="/portfolio/sample-2" className="block p-3 rounded-lg hover:bg-gray-50 transition-colors">
-            <h4 className="font-medium text-gray-900 mb-1 text-sm sm:text-base">
-              AI 기반 이미지 분류 앱
-            </h4>
-            <p className="text-xs sm:text-sm text-gray-600">
-              TensorFlow를 활용한 실시간 이미지 인식 모바일 앱
-            </p>
-          </Link>
-          <Link href="/portfolio/sample-3" className="block p-3 rounded-lg hover:bg-gray-50 transition-colors">
-            <h4 className="font-medium text-gray-900 mb-1 text-sm sm:text-base">
-              MSA 기반 배송 관리 시스템
-            </h4>
-            <p className="text-xs sm:text-sm text-gray-600">
-              마이크로서비스 아키텍처로 구현한 물류 관리 시스템
-            </p>
-          </Link>
-        </div>
-      </div>
     </div>
   );
 }
