@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthTokenFromRequest } from "@/lib/auth-cookies";
 
 export async function POST(req: NextRequest) {
   try {
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/check-oauth-status`;
     
-    // 요청 헤더에서 Authorization 토큰 추출
-    const authHeader = req.headers.get('authorization');
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
     
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": `${process.env.API_KEY}`,
-        ...(authHeader && { "Authorization": authHeader })
+        ...(token && { "Authorization": `Bearer ${token}` })
       },
     });
 

@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthTokenFromRequest } from "@/lib/auth-cookies";
 
 export async function GET(req: NextRequest) {
   try {
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/users/me/portfolios`;
     
-    // 요청 헤더에서 Authorization 토큰 추출
-    const authHeader = req.headers.get('authorization');
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
     
     console.log('🔍 Fetching user portfolios from:', apiUrl);
+    console.log('🔑 Token from cookie:', token ? 'Present' : 'Missing');
     
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": `${process.env.API_KEY}`,
-        ...(authHeader && { "Authorization": authHeader })
+        ...(token && { "Authorization": `Bearer ${token}` })
       },
     });
 
