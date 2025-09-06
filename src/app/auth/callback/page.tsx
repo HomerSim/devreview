@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader } from 'lucide-react';
-import { useOAuth } from '@/hooks/useOAuth';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function AuthCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string>('');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { checkStatus } = useOAuth();
+  const { setUser } = useAuth();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -55,7 +55,22 @@ export default function AuthCallbackPage() {
 
         console.log('Auth successful with cookies:', { userId, provider });
 
-        // 🚀 바로 feed 페이지로 이동
+        // � 로그인 성공 후 사용자 정보 업데이트
+        try {
+          const userResponse = await fetch('/api/auth/me', {
+            credentials: 'include',
+          });
+          
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            setUser(userData);
+            console.log('✅ User data updated:', userData);
+          }
+        } catch (error) {
+          console.error('Failed to fetch user data:', error);
+        }
+
+        // �🚀 바로 feed 페이지로 이동
         router.push('/feed');
 
       } catch (err) {
@@ -66,7 +81,7 @@ export default function AuthCallbackPage() {
     };
 
     handleAuthCallback();
-  }, [searchParams, router, checkStatus]);
+  }, [searchParams, router, setUser]);
 
   // 로딩 중이거나 에러가 있을 때만 UI 표시
   if (status === 'loading') {

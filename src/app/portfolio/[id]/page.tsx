@@ -1,11 +1,14 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { ArrowLeft, ExternalLink, Github, Heart, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import { PortfolioDetail } from '@/types/portfolio';
 import { formatDate, formatRelativeTime } from '@/lib/utils/date';
 import { FeedbackSection } from '@/components/portfolio/FeedbackSection';
 import { PortfolioSidebar } from './components/PortfolioSidebar';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -48,51 +51,93 @@ const SAMPLE_PORTFOLIO: PortfolioDetail = {
   }
 };
 
-// 🎯 서버 사이드에서 포트폴리오 데이터를 가져오는 함수
-async function getPortfolio(id: string): Promise<PortfolioDetail | null> {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${id}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "x-api-key": `${process.env.API_KEY}`,
-            // 🚨 캐시 무효화 - 항상 최신 데이터
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-        },
-        cache: 'no-store', // Next.js 캐시 사용 안함
-    });
+// 🎯 메인 컴포넌트 (클라이언트 컴포넌트로 변경)
+export default function PortfolioDetailPage({ params }: Props) {
+  const [portfolio, setPortfolio] = useState<PortfolioDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+  const { refreshAuthState } = useAuth();
 
-    if (!response.ok) {
-      console.log('API 실패, 샘플 데이터 사용');
-      return SAMPLE_PORTFOLIO;
-    }
+  // 🔄 페이지 포커스 시 인증 상태 새로고침
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔄 Page focused, refreshing auth state...');
+        refreshAuthState();
+      }
+    };
 
-    const data = await response.json();
-    
-    // 🔍 서버에서 받은 데이터 로깅
-    console.log('📡 포트폴리오 상세 데이터:', {
-      id: data.data?.id,
-      like_count: data.data?.like_count,
-      is_liked: data.data?.is_liked,
-      hasIsLiked: 'is_liked' in (data.data || {}),
-    });
-    
-    return data.data;
-  } catch (error) {
-    console.error('포트폴리오 조회 에러:', error);
-    return SAMPLE_PORTFOLIO; // API 실패 시 샘플 데이터 반환
+    const handleFocus = () => {
+      console.log('🔄 Window focused, refreshing auth state...');
+      refreshAuthState();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [refreshAuthState]);
+
+  // 포트폴리오 데이터 로드
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const { id } = await params;
+        const response = await fetch(`/api/portfolios/${id}`, {
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          console.log('API 실패, 샘플 데이터 사용');
+          setPortfolio(SAMPLE_PORTFOLIO);
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        console.log('📡 포트폴리오 상세 데이터:', data);
+        setPortfolio(data.data || data);
+      } catch (error) {
+        console.error('포트폴리오 조회 에러:', error);
+        setError('포트폴리오를 불러올 수 없습니다.');
+        setPortfolio(SAMPLE_PORTFOLIO);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPortfolio();
+  }, [params]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">포트폴리오를 불러오는 중...</p>
+        </div>
+      </div>
+    );
   }
-}
-
-// 🎯 메인 컴포넌트 (기본 export) - 이게 중요!
-export default async function PortfolioDetailPage({ params }: Props) {
-  const { id } = await params;
-  const portfolio = await getPortfolio(id);
 
   if (!portfolio) {
-    notFound();
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">포트폴리오를 찾을 수 없습니다</h1>
+          <p className="text-gray-600 mb-4">{error || '요청하신 포트폴리오가 존재하지 않습니다.'}</p>
+          <Link 
+            href="/feed" 
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            피드로 돌아가기
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (

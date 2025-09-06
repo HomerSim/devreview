@@ -10,12 +10,15 @@ interface AuthContextType {
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
   // OAuth 관련 기능 추가
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   oauthStatus: any;
   refreshOAuthToken: () => Promise<boolean>;
   disconnectOAuth: () => Promise<boolean>;
   // 🔐 유틸리티 함수들 추가
   isAuthenticated: boolean;
   requireAuth: (action: () => void, message?: string) => void;
+  // 🔄 인증 상태 강제 새로고침
+  refreshAuthState: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,6 +84,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     action();
   };
 
+  // 🔄 인증 상태 강제 새로고침
+  const refreshAuthState = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+        console.log('✅ Auth state refreshed:', userData);
+      } else {
+        setUser(null);
+        console.log('❌ Auth state cleared');
+      }
+    } catch (error) {
+      console.error('Failed to refresh auth state:', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -91,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     disconnectOAuth: disconnect,
     isAuthenticated: !!user,
     requireAuth,
+    refreshAuthState,
   };
 
   return (

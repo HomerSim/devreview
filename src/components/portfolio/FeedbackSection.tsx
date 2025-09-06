@@ -130,6 +130,7 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
   };
 
   // 🎯 사용자 친화적 오류 메시지 변환
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getUserFriendlyError = (errorData: any, status: number): string => {
     // 400번대는 대부분 사용자 입력 문제이므로 메시지 표시
     if (status >= 400 && status < 500) {
