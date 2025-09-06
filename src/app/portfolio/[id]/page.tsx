@@ -241,13 +241,68 @@ function PortfolioHeader({ portfolio }: { portfolio: PortfolioDetail }) {
 
 // 🎯 포트폴리오 콘텐츠 컴포넌트
 function PortfolioContent({ content }: { content: string }) {
+  const markdownComponents = {
+    h1: ({ children }: { children: React.ReactNode }) => (
+      <h1 className="text-2xl font-bold text-gray-900 mb-4 mt-6">{children}</h1>
+    ),
+    h2: ({ children }: { children: React.ReactNode }) => (
+      <h2 className="text-xl font-semibold text-gray-900 mb-3 mt-5">{children}</h2>
+    ),
+    h3: ({ children }: { children: React.ReactNode }) => (
+      <h3 className="text-lg font-medium text-gray-900 mb-2 mt-4">{children}</h3>
+    ),
+    p: ({ children }: { children: React.ReactNode }) => (
+      <p className="text-gray-700 mb-4 leading-relaxed">{children}</p>
+    ),
+    ul: ({ children }: { children: React.ReactNode }) => (
+      <ul className="list-disc list-inside mb-4 space-y-2 text-gray-700">{children}</ul>
+    ),
+    ol: ({ children }: { children: React.ReactNode }) => (
+      <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-700">{children}</ol>
+    ),
+    li: ({ children }: { children: React.ReactNode }) => (
+      <li className="ml-4">{children}</li>
+    ),
+    strong: ({ children }: { children: React.ReactNode }) => (
+      <strong className="font-semibold text-gray-900">{children}</strong>
+    ),
+    em: ({ children }: { children: React.ReactNode }) => (
+      <em className="italic text-gray-700">{children}</em>
+    ),
+    code: ({ children }: { children: React.ReactNode }) => (
+      <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-800">{children}</code>
+    ),
+    pre: ({ children }: { children: React.ReactNode }) => (
+      <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto mb-4">
+        <code className="text-sm font-mono text-gray-800">{children}</code>
+      </pre>
+    ),
+    blockquote: ({ children }: { children: React.ReactNode }) => (
+      <blockquote className="border-l-4 border-gray-300 pl-4 py-2 mb-4 text-gray-700 italic">
+        {children}
+      </blockquote>
+    ),
+    a: ({ href, children }: { href?: string; children: React.ReactNode }) => (
+      <a 
+        href={href} 
+        className="text-blue-600 hover:text-blue-800 underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </a>
+    ),
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">
         프로젝트 상세 설명
       </h2>
-      <div className="prose max-w-none text-sm sm:text-base prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700">
-        <ReactMarkdown>{content}</ReactMarkdown>
+      <div className="max-w-none text-sm sm:text-base">
+        <ReactMarkdown components={markdownComponents}>
+          {content}
+        </ReactMarkdown>
       </div>
     </div>
   );
