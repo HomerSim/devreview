@@ -207,13 +207,11 @@ function ProfilePage() {
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{user.name}</h1>
                 <div className="flex flex-col sm:flex-row items-center gap-2 mb-2">
                   <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      user.role === 'JUNIOR' 
-                        ? 'bg-green-100 text-green-700' 
-                        : 'bg-purple-100 text-purple-700'
-                    }`}>
-                      {user.role === 'JUNIOR' ? '주니어 개발자' : '시니어 개발자'}
-                    </span>
+                    {user.role === 'SENIOR' && (
+                      <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700">
+                        시니어 개발자
+                      </span>
+                    )}
                     {user.isVerified && (
                       <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
                         인증됨

@@ -18,17 +18,17 @@ export default function RoleSelectionPage() {
           </div>
 
           <div className="grid gap-6 sm:gap-8 md:grid-cols-2">
-            {/* Junior Developer Card */}
+            {/* Portfolio Owner Card */}
             <Link href="/feed" className="group">
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 hover:bg-white transition-all duration-300 border border-blue-100 hover:border-blue-200 shadow-sm hover:shadow-md h-full">
                 <div className="text-6xl mb-6">
                   <User className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-blue-400" />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-                  주니어 개발자
+                  포트폴리오 공유
                 </h2>
                 <p className="text-gray-700 mb-6 leading-relaxed">
-                  포트폴리오 리뷰를 받고 싶어요
+                  내 프로젝트에 대한 피드백을 받고 싶어요
                 </p>
                 <div className="space-y-3 text-sm text-gray-600 mb-6 sm:mb-8">
                   <div className="flex items-center justify-center gap-2">
@@ -37,7 +37,7 @@ export default function RoleSelectionPage() {
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <span>✓</span>
-                    <span>시니어 피드백 받기</span>
+                    <span>전문가 피드백 받기</span>
                   </div>
                   <div className="flex items-center justify-center gap-2">
                     <span>✓</span>
@@ -58,10 +58,10 @@ export default function RoleSelectionPage() {
                   <Users className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-400" />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-600 mb-4">
-                  시니어 개발자
+                  전문가 피드백
                 </h2>
                 <p className="text-gray-500 mb-6 leading-relaxed">
-                  주니어에게 도움을 주고 싶어요
+                  다른 개발자에게 도움을 주고 싶어요
                 </p>
                 <div className="space-y-3 text-sm text-gray-500 mb-6 sm:mb-8">
                   <div className="flex items-center justify-center gap-2">

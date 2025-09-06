@@ -353,13 +353,9 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
           <span className="font-medium text-gray-900 text-sm sm:text-base">
             {user.name}
           </span>
-          {user.role && (
-            <span className={`text-xs px-2 py-1 rounded-full ${
-              user.role === 'SENIOR' 
-                ? 'bg-purple-100 text-purple-700' 
-                : 'bg-blue-100 text-blue-700'
-            }`}>
-              {user.role === 'SENIOR' ? '시니어' : '주니어'}
+          {user.role === 'SENIOR' && (
+            <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">
+              시니어
             </span>
           )}
           <div className="flex items-center gap-1">
