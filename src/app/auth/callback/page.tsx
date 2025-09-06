@@ -16,26 +16,33 @@ export default function AuthCallbackPage() {
       try {
         // URL에서 토큰과 상태 정보 추출
         const token = searchParams?.get('token');
+        const userId = searchParams?.get('user_id');
         const error = searchParams?.get('error');
+        const message = searchParams?.get('message');
         const provider = searchParams?.get('provider');
 
-        if (error) {
-          setError(decodeURIComponent(error));
+        // 에러 처리
+        if (error || message) {
+          const errorMsg = message || error || '로그인 중 오류가 발생했습니다.';
+          setError(decodeURIComponent(errorMsg));
           setStatus('error');
           return;
         }
 
+        // 토큰 검증
         if (!token) {
           setError('인증 토큰을 받지 못했습니다.');
           setStatus('error');
           return;
         }
 
-        // 토큰을 로컬 스토리지에 저장
+        // 토큰과 사용자 정보를 로컬 스토리지에 저장
         localStorage.setItem('auth_token', token);
+        if (userId) {
+          localStorage.setItem('user_id', userId);
+        }
         
-        // 사용자 정보 검증 (선택사항)
-        // const response = await apiClient.getCurrentUser();
+        console.log('Auth successful:', { token: token.substring(0, 20) + '...', userId, provider });
         
         setStatus('success');
         
