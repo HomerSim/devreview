@@ -1,16 +1,13 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, UpdateUserRequest } from '@/types/api';
-import { apiClient } from '@/lib/api';
+import { User } from '@/types/api';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (userData: { email: string; password: string; name: string; role: 'JUNIOR' | 'SENIOR' }) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  updateUser: (userData: UpdateUserRequest) => Promise<void>;
+  setUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,16 +26,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        const response = await apiClient.getCurrentUser();
-        if (response.success && response.data) {
-          setUser(response.data);
-        } else {
-          localStorage.removeItem('auth_token');
-        }
+        // 토큰이 있으면 사용자 정보를 가져와야 하는데, 
+        // 현재는 SSO만 지원하므로 토큰만 확인
+        // 실제 사용자 정보는 백엔드에서 가져와야 함
+        setLoading(false);
+        
       } catch (error) {
         console.error('Auth initialization failed:', error);
         localStorage.removeItem('auth_token');
-      } finally {
         setLoading(false);
       }
     };
@@ -46,78 +41,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await apiClient.login(email, password);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        localStorage.setItem('auth_token', token);
-        setUser(user);
-        return { success: true };
-      } else {
-        return { success: false, error: response.error || '로그인에 실패했습니다.' };
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
-      return { success: false, error: '로그인 중 오류가 발생했습니다.' };
-    }
-  };
-
-  const register = async (userData: { 
-    email: string; 
-    password: string; 
-    name: string; 
-    role: 'JUNIOR' | 'SENIOR' 
-  }) => {
-    try {
-      const response = await apiClient.register(userData);
-      
-      if (response.success && response.data) {
-        // 회원가입 후 자동 로그인
-        const loginResult = await login(userData.email, userData.password);
-        return loginResult;
-      } else {
-        return { success: false, error: response.error || '회원가입에 실패했습니다.' };
-      }
-    } catch (error) {
-      console.error('Registration failed:', error);
-      return { success: false, error: '회원가입 중 오류가 발생했습니다.' };
-    }
-  };
-
   const logout = async () => {
     try {
-      await apiClient.logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    } finally {
+      // 백엔드에 로그아웃 요청을 보낼 수도 있음
       localStorage.removeItem('auth_token');
       setUser(null);
-    }
-  };
-
-  const updateUser = async (userData: UpdateUserRequest) => {
-    if (!user) return;
-    
-    try {
-      const response = await apiClient.updateUser(user.id, userData);
-      if (response.success && response.data) {
-        setUser(response.data);
-      }
     } catch (error) {
-      console.error('User update failed:', error);
-      throw error;
+      console.error('Logout failed:', error);
     }
   };
 
   const value = {
     user,
     loading,
-    login,
-    register,
     logout,
-    updateUser,
+    setUser,
   };
 
   return (

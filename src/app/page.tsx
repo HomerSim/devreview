@@ -4,6 +4,39 @@ import { Github, Mail, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LandingPage() {
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await fetch('/api/auth/sso/google');
+      const data = await response.json();
+      
+      console.log(data);
+      if (data.success && data.data?.authUrl) {
+        window.location.href = data.data.authUrl;
+      } else {
+        throw new Error(data.message || 'Failed to get auth URL');
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    try {
+      const response = await fetch('/api/auth/sso/github');
+      const data = await response.json();
+      
+      if (data.success && data.data?.authUrl) {
+        window.location.href = data.data.authUrl;
+      } else {
+        throw new Error(data.message || 'Failed to get auth URL');
+      }
+    } catch (error) {
+      console.error('GitHub login error:', error);
+      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-100 to-blue-200">
       <div className="min-h-screen flex items-center justify-center px-4 py-8">
@@ -25,11 +58,17 @@ export default function LandingPage() {
 
           {/* Auth Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-16 px-4">
-            <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-colors">
+            <button 
+              onClick={handleGithubLogin}
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-colors"
+            >
               <Github className="w-5 h-5" />
               GitHub로 시작하기
             </button>
-            <button className="w-full sm:w-auto bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-colors">
+            <button 
+              onClick={handleGoogleLogin}
+              className="w-full sm:w-auto bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-colors"
+            >
               <Mail className="w-5 h-5" />
               Google로 시작하기
             </button>

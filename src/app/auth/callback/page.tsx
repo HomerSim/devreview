@@ -39,9 +39,9 @@ export default function AuthCallbackPage() {
         
         setStatus('success');
         
-        // 2초 후 메인 페이지로 리다이렉트
+        // 2초 후 역할 선택 페이지로 리다이렉트
         setTimeout(() => {
-          router.push('/feed');
+          router.push('/role-selection');
         }, 2000);
 
       } catch (err) {
@@ -81,8 +81,8 @@ export default function AuthCallbackPage() {
                 로그인 성공!
               </h1>
               <p className="text-gray-600 mb-4">
-                DevReview에 오신 것을 환영합니다.<br />
-                곧 메인 페이지로 이동합니다.
+                DevReview에 오신 것을 환영합니다!<br />
+                곧 역할 선택 페이지로 이동합니다.
               </p>
               <div className="animate-pulse text-blue-500 text-sm">
                 리다이렉트 중...
