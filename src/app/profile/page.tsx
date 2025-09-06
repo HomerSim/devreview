@@ -19,6 +19,64 @@ function ProfilePage() {
     isDeleting?: boolean;
   }>({ isOpen: false });
 
+  const [settingsModal, setSettingsModal] = useState({
+    isOpen: false,
+    isLoading: false,
+    name: ''
+  });
+
+  // 설정 모달 열기
+  const handleSettingsClick = () => {
+    setSettingsModal({
+      isOpen: true,
+      isLoading: false,
+      name: user?.name || ''
+    });
+  };
+
+  // 설정 모달 닫기
+  const handleSettingsCancel = () => {
+    setSettingsModal({
+      isOpen: false,
+      isLoading: false,
+      name: ''
+    });
+  };
+
+  // 사용자 정보 업데이트
+  const handleSettingsSubmit = async () => {
+    if (!settingsModal.name.trim()) return;
+
+    setSettingsModal(prev => ({ ...prev, isLoading: true }));
+
+    try {
+      const response = await fetch('/api/users/me', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: settingsModal.name.trim()
+        }),
+      });
+
+      if (response.ok) {
+        // 성공시 페이지 새로고침하여 최신 정보 반영
+        window.location.reload();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Failed to update user info:', errorData);
+        alert('정보 업데이트에 실패했습니다. 다시 시도해주세요.');
+        setSettingsModal(prev => ({ ...prev, isLoading: false }));
+      }
+    } catch (error) {
+      console.error('Network error updating user info:', error);
+      alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+      setSettingsModal(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -246,7 +304,11 @@ function ProfilePage() {
                   주니어로 전환
                 </button>
               )}
-              <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+              <button 
+                onClick={handleSettingsClick}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                title="설정"
+              >
                 <Settings className="w-5 h-5" />
               </button>
             </div>
@@ -388,6 +450,64 @@ function ProfilePage() {
         feedbackCount={deleteModal.feedbackCount || 0}
         isLoading={deleteModal.isDeleting || false}
       />
+
+      {/* 설정 모달 */}
+      {settingsModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">프로필 설정</h2>
+                <button
+                  onClick={handleSettingsCancel}
+                  disabled={settingsModal.isLoading}
+                  className="text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* 이름 입력 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    이름 <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={settingsModal.name}
+                    onChange={(e) => setSettingsModal(prev => ({ ...prev, name: e.target.value }))}
+                    disabled={settingsModal.isLoading}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    placeholder="이름을 입력하세요"
+                    maxLength={50}
+                  />
+                </div>
+              </div>
+
+              {/* 버튼 영역 */}
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={handleSettingsCancel}
+                  disabled={settingsModal.isLoading}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleSettingsSubmit}
+                  disabled={settingsModal.isLoading || !settingsModal.name.trim()}
+                  className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {settingsModal.isLoading ? '저장 중...' : '저장'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
