@@ -370,10 +370,10 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
         </div>
         <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-500">
           <span>{formatRelativeTime(feedback.created_at)}</span>
-          <div className="flex items-center gap-1">
+          {/* <div className="flex items-center gap-1">
             <ThumbsUp className="w-4 h-4" />
             <span>{likeCount}</span>
-          </div>
+          </div> */}
         </div>
       </div>
       <p className="text-gray-700 text-sm sm:text-base leading-relaxed">

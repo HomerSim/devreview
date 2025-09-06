@@ -52,18 +52,18 @@ export default function RoleSelectionPage() {
             </Link>
 
             {/* Senior Developer Card */}
-            <Link href="/senior/verify" className="group">
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 hover:bg-white transition-all duration-300 border border-blue-100 hover:border-blue-200 shadow-sm hover:shadow-md h-full">
+            <div className="relative">
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-gray-200 shadow-sm opacity-75 h-full cursor-not-allowed">
                 <div className="text-6xl mb-6">
-                  <Users className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-blue-400" />
+                  <Users className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-400" />
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-600 mb-4">
                   시니어 개발자
                 </h2>
-                <p className="text-gray-700 mb-6 leading-relaxed">
+                <p className="text-gray-500 mb-6 leading-relaxed">
                   주니어에게 도움을 주고 싶어요
                 </p>
-                <div className="space-y-3 text-sm text-gray-600 mb-6 sm:mb-8">
+                <div className="space-y-3 text-sm text-gray-500 mb-6 sm:mb-8">
                   <div className="flex items-center justify-center gap-2">
                     <span>✓</span>
                     <span>포트폴리오 리뷰</span>
@@ -77,12 +77,15 @@ export default function RoleSelectionPage() {
                     <span>개발 커뮤니티 기여</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-2 text-blue-500 font-semibold group-hover:gap-4 transition-all">
-                  <span className="text-center">인증하고 시작하기</span>
-                  <ArrowRight className="w-4 h-4" />
+                <div className="flex items-center justify-center gap-2 text-gray-400 font-semibold">
+                  <span className="text-center">준비중입니다</span>
                 </div>
               </div>
-            </Link>
+              {/* Coming Soon Badge */}
+              <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                준비중
+              </div>
+            </div>
           </div>
 
           <div className="mt-8 sm:mt-12">
