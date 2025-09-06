@@ -86,7 +86,7 @@ export default function LoginPage() {
             </button>
 
             {/* GitHub 로그인 */}
-            <button
+            {/* <button
               onClick={() => handleSSOLogin('github')}
               disabled={loading !== null}
               className="w-full flex items-center justify-center space-x-3 py-4 px-6 bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed"
@@ -99,7 +99,7 @@ export default function LoginPage() {
                   <span className="font-medium">GitHub로 계속하기</span>
                 </>
               )}
-            </button>
+            </button> */}
           </div>
 
           <div className="mt-6 text-center">
@@ -142,13 +142,13 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* 홈으로 돌아가기 */}
+        {/* 피드로 돌아가기 */}
         <div className="text-center mt-6">
           <Link 
-            href="/" 
+            href="/feed" 
             className="inline-flex items-center space-x-2 text-gray-500 hover:text-gray-700 transition-colors text-sm"
           >
-            <span>홈으로 돌아가기</span>
+            <span>피드로 돌아가기</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

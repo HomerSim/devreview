@@ -58,13 +58,13 @@ export default function LandingPage() {
 
           {/* Auth Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-16 px-4">
-            <button 
+            {/* <button 
               onClick={handleGithubLogin}
               className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-colors"
             >
               <Github className="w-5 h-5" />
               GitHub로 시작하기
-            </button>
+            </button> */}
             <button 
               onClick={handleGoogleLogin}
               className="w-full sm:w-auto bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold flex items-center justify-center gap-3 transition-colors"
@@ -102,7 +102,7 @@ export default function LandingPage() {
           {/* CTA */}
           <div className="text-center px-4">
             <Link 
-              href="/role-selection"
+              href="/feed"
               className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-colors shadow-lg hover:shadow-xl"
             >
               시작하기
