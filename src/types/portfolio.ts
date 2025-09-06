@@ -42,6 +42,7 @@ export interface PortfolioDetail {
   is_liked?: boolean; // 현재 사용자의 좋아요 상태
   created_at: string;
   updated_at: string;
+  user_id?: string; // 소유권 확인용 추가
   user: {
     name: string;
     id: string;

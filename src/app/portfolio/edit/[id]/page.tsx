@@ -12,7 +12,7 @@ import { CategorySelect } from '@/components/ui/category-select';
 import { TechStackSelector } from '@/components/tech-stack-selector';
 import { PageHeader } from '@/components/page-header';
 import { ConfirmModal } from '@/components/ui/confirm-modal';
-import { withAuth } from '@/hooks/useAuth';
+import { withAuth, useAuth } from '@/hooks/useAuth';
 
 // Constants
 import { PORTFOLIO_CATEGORIES, type PortfolioCategory } from '@/constants/categories';
@@ -42,6 +42,10 @@ function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTechStack, setSelectedTechStack] = useState<string[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [ownershipError, setOwnershipError] = useState<string>('');
+  
+  const { user } = useAuth();
   
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -67,11 +71,17 @@ function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
 
   // 포트폴리오 데이터 로드
   useEffect(() => {
-    if (!portfolioId) return;
+    if (!portfolioId || !user) {
+      console.log('🚨 포트폴리오 로드 조건 미충족:', { portfolioId, user });
+      return;
+    }
 
     const fetchPortfolio = async () => {
       try {
         setIsLoading(true);
+        setOwnershipError('');
+        
+        console.log('📡 포트폴리오 데이터 로드 시작:', portfolioId);
         
         // 🍪 쿠키 기반: credentials 'include'로 쿠키 자동 전송
         const response = await fetch(`/api/portfolios/${portfolioId}`, {
@@ -82,12 +92,43 @@ function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
         });
         
         if (!response.ok) {
-          throw new Error('포트폴리오를 불러올 수 없습니다.');
+          console.error('❌ 포트폴리오 API 응답 실패:', response.status, response.statusText);
+          if (response.status === 404) {
+            setOwnershipError('포트폴리오를 찾을 수 없습니다.');
+          } else {
+            setOwnershipError('포트폴리오를 불러올 수 없습니다.');
+          }
+          return;
         }
 
         const result = await response.json();
         const portfolio = result.data;
 
+        console.log('🔍 소유권 확인 디버깅:', {
+          currentUser: user,
+          currentUserId: (user as any)?.data?.id || user?.id,
+          portfolio: portfolio,
+          portfolioUserId: portfolio.user_id,
+          portfolioUserObject: portfolio.user,
+          portfolioUserObjectId: portfolio.user?.id,
+        });
+
+        // 🔒 소유권 확인: 현재 로그인한 사용자와 포트폴리오 작성자가 같은지 확인
+        const portfolioUserId = portfolio.user_id || portfolio.user?.id;
+        const currentUserId = (user as any)?.data?.id || user?.id;
+        console.log('🔒 소유권 비교:', {
+          portfolioUserId,
+          currentUserId,
+          isEqual: portfolioUserId === currentUserId
+        });
+
+        if (portfolioUserId !== currentUserId) {
+          setOwnershipError('본인의 포트폴리오만 수정할 수 있습니다.');
+          setIsOwner(false);
+          return;
+        }
+
+        setIsOwner(true);
         setFormData({
           title: portfolio.title || '',
           category: portfolio.category || '',
@@ -100,13 +141,14 @@ function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
         setSelectedTechStack(portfolio.tech_stack || []);
       } catch (err) {
         console.error('Portfolio fetch error:', err);
+        setOwnershipError('포트폴리오를 불러오는 중 오류가 발생했습니다.');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchPortfolio();
-  }, [portfolioId]);
+  }, [portfolioId, user]);
 
   // 폼 데이터 업데이트
   const updateFormData = (updates: Partial<PortfolioFormData>) => {
@@ -231,6 +273,43 @@ function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">포트폴리오를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 🚨 소유권 오류 또는 권한 없음
+  if (ownershipError || !isOwner) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-8">
+            <div className="text-red-500 mb-4">
+              <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-red-900 mb-3">
+              접근 권한이 없습니다
+            </h2>
+            <p className="text-red-700 mb-6">
+              {ownershipError || '본인의 포트폴리오만 수정할 수 있습니다.'}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => window.history.back()}
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+              >
+                이전 페이지로
+              </button>
+              <button
+                onClick={() => window.location.href = '/profile'}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                내 프로필로 이동
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
