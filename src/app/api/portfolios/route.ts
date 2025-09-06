@@ -1,37 +1,61 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthTokenFromRequest } from "@/lib/auth-cookies";
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const page = searchParams.get("page") || "1";
-  const limit = searchParams.get("limit") || "10";
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = searchParams.get("page") || "1";
+    const limit = searchParams.get("limit") || "10";
 
-  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios?page=${page}&limit=${limit}`;
-  const response = await fetch(apiUrl, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": `${process.env.API_KEY}`,
-    },
-  });
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
 
-  const data = await response.json();
-  return NextResponse.json(data);
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios?page=${page}&limit=${limit}`;
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": `${process.env.API_KEY}`,
+        ...(token && { "Authorization": `Bearer ${token}` })
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Get portfolios error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to get portfolios' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
+    console.log("📥 Incoming portfolio creation request with token:", token ? 'Present' : 'Missing');
+    
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios`;
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": `${process.env.API_KEY}`,
+        ...(token && { "Authorization": `Bearer ${token}` })
       },
       body: JSON.stringify(body),
     });
 
     console.log("🚀 Creating portfolio with data:", body);
+    console.log("🔑 Token from cookie:", token ? 'Present' : 'Missing');
 
     
     if (!response.ok) {

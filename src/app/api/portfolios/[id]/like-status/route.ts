@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthTokenFromRequest } from '@/lib/auth-cookies';
 
 interface Context {
   params: Promise<{
@@ -10,8 +11,12 @@ export async function GET(request: NextRequest, context: Context) {
   try {
     const { id } = await context.params;
     
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(request);
+    
     console.log('🔍 좋아요 상태 확인 요청:', {
       portfolioId: id,
+      hasAuth: token ? 'Present' : 'Missing',
       timestamp: new Date().toISOString(),
       userAgent: request.headers.get('user-agent')
     });
@@ -22,6 +27,7 @@ export async function GET(request: NextRequest, context: Context) {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': process.env.API_KEY || '',
+        ...(token && { "Authorization": `Bearer ${token}` }),
         // 🔄 캐시 무효화 헤더들
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',

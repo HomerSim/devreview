@@ -2,12 +2,17 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from '@/types/api';
+import { useOAuth } from '@/hooks/useOAuth';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
+  // OAuth 관련 기능 추가
+  oauthStatus: any;
+  refreshOAuthToken: () => Promise<boolean>;
+  disconnectOAuth: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,25 +20,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // OAuth 관리 hook 사용
+  const { oauthStatus, refreshToken, disconnect } = useOAuth();
 
   // 초기 사용자 정보 로드
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
-          setLoading(false);
-          return;
-        }
+        // 🍪 쿠키 기반: 서버에서 인증 상태 확인
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include', // 쿠키 포함
+        });
 
-        // 토큰이 있으면 사용자 정보를 가져와야 하는데, 
-        // 현재는 SSO만 지원하므로 토큰만 확인
-        // 실제 사용자 정보는 백엔드에서 가져와야 함
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        }
+        
         setLoading(false);
         
       } catch (error) {
         console.error('Auth initialization failed:', error);
-        localStorage.removeItem('auth_token');
         setLoading(false);
       }
     };
@@ -43,8 +51,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      // 백엔드에 로그아웃 요청을 보낼 수도 있음
-      localStorage.removeItem('auth_token');
+      // 🍪 쿠키 기반: 로그아웃 API 호출
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include', // 쿠키 포함
+      });
+
+      if (response.ok) {
+        console.log('✅ Logout successful');
+      }
+
       setUser(null);
     } catch (error) {
       console.error('Logout failed:', error);
@@ -56,6 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     logout,
     setUser,
+    oauthStatus,
+    refreshOAuthToken: refreshToken,
+    disconnectOAuth: disconnect,
   };
 
   return (

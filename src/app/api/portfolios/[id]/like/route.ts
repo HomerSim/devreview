@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthTokenFromRequest } from "@/lib/auth-cookies";
 
 // 좋아요 추가
 export async function POST(
@@ -8,6 +9,10 @@ export async function POST(
   try {
     const { id } = await params;
     
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
+    console.log("❤️ Like request with token:", token ? 'Present' : 'Missing');
+    
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${id}/like`;
     
     const response = await fetch(apiUrl, {
@@ -15,6 +20,7 @@ export async function POST(
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY || '',
+        ...(token && { "Authorization": `Bearer ${token}` }),
         // 🔄 캐시 무효화 헤더들
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
@@ -59,6 +65,10 @@ export async function DELETE(
   try {
     const { id } = await params;
     
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
+    console.log("💔 Unlike request with token:", token ? 'Present' : 'Missing');
+    
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${id}/like`;
     
     const response = await fetch(apiUrl, {
@@ -66,6 +76,7 @@ export async function DELETE(
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY || '',
+        ...(token && { "Authorization": `Bearer ${token}` }),
         // 🔄 캐시 무효화 헤더들
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',

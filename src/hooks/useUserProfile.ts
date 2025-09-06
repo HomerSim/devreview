@@ -46,7 +46,13 @@ export const useUserProfile = () => {
   // 🎯 사용자 프로필 조회
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch('/api/auth/me');
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/auth/me', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -73,7 +79,13 @@ export const useUserProfile = () => {
   // 🎯 사용자 포트폴리오 목록 조회
   const fetchUserPortfolios = async () => {
     try {
-      const response = await fetch('/api/users/me/portfolios');
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/users/me/portfolios', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -135,8 +147,13 @@ export const useUserProfile = () => {
   // 🎯 포트폴리오 삭제
   const deletePortfolio = async (portfolioId: string): Promise<boolean> => {
     try {
+      const token = localStorage.getItem('auth_token');
       const response = await fetch(`/api/portfolios/${portfolioId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
       });
 
       if (!response.ok) {

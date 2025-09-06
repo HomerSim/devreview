@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    // TODO: 실제로는 JWT 토큰에서 사용자 ID를 추출해야 함
-    // 현재는 하드코딩된 사용자 ID 사용
-    const userId = "9df0af64-9179-43ca-8d9b-f4728223e4b5";
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/users/me/portfolios`;
     
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/portfolios`;
+    // 요청 헤더에서 Authorization 토큰 추출
+    const authHeader = req.headers.get('authorization');
     
     console.log('🔍 Fetching user portfolios from:', apiUrl);
     
@@ -15,6 +14,7 @@ export async function GET(req: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": `${process.env.API_KEY}`,
+        ...(authHeader && { "Authorization": authHeader })
       },
     });
 

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthTokenFromRequest } from "@/lib/auth-cookies";
 
 export async function GET(
   req: NextRequest,
@@ -10,6 +11,9 @@ export async function GET(
     const page = searchParams.get("page") || "1";
     const limit = searchParams.get("limit") || "10";
 
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
+
     // 백엔드 스펙에 맞는 URL 사용
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/feedbacks/portfolios/${id}/feedbacks?page=${page}&limit=${limit}`;
 
@@ -18,6 +22,7 @@ export async function GET(
       headers: {
         "Content-Type": "application/json",
         "x-api-key": `${process.env.API_KEY}`,
+        ...(token && { "Authorization": `Bearer ${token}` })
       },
     });
 
@@ -43,11 +48,17 @@ export async function POST(
     const body = await req.json();
     body.portfolio_id = id; // 포트폴리오 ID 추가
     
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
+    console.log("📥 Creating feedback with token:", token ? 'Present' : 'Missing');
+    
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/feedbacks`;
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": `${process.env.API_KEY}`,
+        ...(token && { "Authorization": `Bearer ${token}` })
       },
       body: JSON.stringify(body),
     });

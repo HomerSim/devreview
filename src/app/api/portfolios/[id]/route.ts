@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthTokenFromRequest } from "@/lib/auth-cookies";
 
 export async function GET(
     req: NextRequest,
@@ -9,12 +10,17 @@ export async function GET(
         // ✅ Next.js 15: params를 await 해야 함
         const { id } = await params;
         const portfolioId = id;
+        
+        // 🍪 쿠키에서 토큰 추출
+        const token = getAuthTokenFromRequest(req);
+        
         const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${portfolioId}`;
         const response = await fetch(apiUrl, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 "x-api-key": `${process.env.API_KEY}`,
+                ...(token && { "Authorization": `Bearer ${token}` })
             },
         });
 
@@ -40,6 +46,9 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
     
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
+    
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${id}`;
     
     const response = await fetch(apiUrl, {
@@ -47,6 +56,7 @@ export async function PATCH(
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY || '',
+        ...(token && { "Authorization": `Bearer ${token}` })
       },
       body: JSON.stringify(body),
     });
@@ -81,6 +91,9 @@ export async function DELETE(
   try {
     const { id } = await params;
     
+    // 🍪 쿠키에서 토큰 추출
+    const token = getAuthTokenFromRequest(req);
+    
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${id}`;
     
     const response = await fetch(apiUrl, {
@@ -88,6 +101,7 @@ export async function DELETE(
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY || '',
+        ...(token && { "Authorization": `Bearer ${token}` })
       },
     });
 

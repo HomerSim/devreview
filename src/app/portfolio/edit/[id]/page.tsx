@@ -71,7 +71,14 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
     const fetchPortfolio = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/portfolios/${portfolioId}`);
+        
+        // 🍪 쿠키 기반: credentials 'include'로 쿠키 자동 전송
+        const response = await fetch(`/api/portfolios/${portfolioId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', // 쿠키 포함
+        });
         
         if (!response.ok) {
           throw new Error('포트폴리오를 불러올 수 없습니다.');
@@ -180,16 +187,20 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
         tech_stack: selectedTechStack
       };
 
+      // 🍪 쿠키 기반: credentials 'include'로 쿠키 자동 전송
       const response = await fetch(`/api/portfolios/${portfolioId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // 쿠키 포함
         body: JSON.stringify(requestData),
       });
 
       if (!response.ok) {
-        throw new Error('포트폴리오 수정에 실패했습니다.');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ Portfolio update failed:', errorData);
+        throw new Error(`포트폴리오 수정에 실패했습니다. (${response.status})`);
       }
 
       closeConfirmModal();

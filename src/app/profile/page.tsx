@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { User, Settings, LogOut, Edit, Eye, Plus, Calendar, BookOpen, MessageCircle, Heart, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/hooks/useAuth';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 
 export default function ProfilePage() {
   const { user, portfolios, isLoading, error, handleRoleSwitch, deletePortfolio } = useUserProfile();
+  const { logout } = useAuth();
   
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
@@ -17,9 +19,13 @@ export default function ProfilePage() {
     isDeleting?: boolean;
   }>({ isOpen: false });
 
-  const handleLogout = () => {
-    // TODO: 실제 로그아웃 로직
-    console.log('Logout');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   // 삭제 버튼 클릭 처리

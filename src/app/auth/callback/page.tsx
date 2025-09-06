@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
+import { useOAuth } from '@/hooks/useOAuth';
 import Link from 'next/link';
 
 export default function AuthCallbackPage() {
@@ -10,6 +11,7 @@ export default function AuthCallbackPage() {
   const [error, setError] = useState<string>('');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { checkStatus } = useOAuth();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -36,20 +38,39 @@ export default function AuthCallbackPage() {
           return;
         }
 
-        // 토큰과 사용자 정보를 로컬 스토리지에 저장
-        localStorage.setItem('auth_token', token);
-        if (userId) {
-          localStorage.setItem('user_id', userId);
+        // ✅ 쿠키 기반: API 엔드포인트로 토큰 설정
+        const cookieResponse = await fetch('/api/auth/set-cookie', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', // 쿠키 포함
+          body: JSON.stringify({ token, user_id: userId }),
+        });
+
+        if (!cookieResponse.ok) {
+          setError('인증 쿠키 설정에 실패했습니다.');
+          setStatus('error');
+          return;
         }
-        
-        console.log('Auth successful:', { token: token.substring(0, 20) + '...', userId, provider });
+
+        console.log('Auth successful with cookies:', { userId, provider });
         
         setStatus('success');
         
-        // 2초 후 역할 선택 페이지로 리다이렉트
+        // OAuth 상태 확인
+        setTimeout(async () => {
+          try {
+            await checkStatus();
+          } catch (error) {
+            console.error('Failed to check OAuth status:', error);
+          }
+        }, 1000);
+        
+        // 3초 후 OAuth 테스트 페이지로 리다이렉트
         setTimeout(() => {
-          router.push('/role-selection');
-        }, 2000);
+          router.push('/oauth-test');
+        }, 3000);
 
       } catch (err) {
         console.error('Auth callback error:', err);
@@ -89,7 +110,7 @@ export default function AuthCallbackPage() {
               </h1>
               <p className="text-gray-600 mb-4">
                 DevReview에 오신 것을 환영합니다!<br />
-                곧 역할 선택 페이지로 이동합니다.
+                곧 OAuth 관리 페이지로 이동합니다.
               </p>
               <div className="animate-pulse text-blue-500 text-sm">
                 리다이렉트 중...

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`;
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh-oauth-token`;
     
     // 요청 헤더에서 Authorization 토큰 추출
     const authHeader = req.headers.get('authorization');
     
     const response = await fetch(apiUrl, {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": `${process.env.API_KEY}`,
@@ -19,9 +19,9 @@ export async function GET(req: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Get current user error:', error);
+    console.error('Refresh OAuth token error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to get current user' },
+      { success: false, error: 'Failed to refresh OAuth token' },
       { status: 500 }
     );
   }

@@ -103,18 +103,25 @@ export const usePortfolioForm = () => {
 
       console.log('🚀 Creating portfolio with data:', portfolioData);
 
-      // ✅ Next.js API Route 사용 (api/portfolios/route.ts의 POST)
+      // 🍪 쿠키 기반: credentials 'include'로 쿠키 자동 전송
       const response = await fetch('/api/portfolios', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // 쿠키 포함
         body: JSON.stringify(portfolioData),
       });
 
       console.log('Response:', response);
+      console.log('Response status:', response.status);
+      console.log('Response statusText:', response.statusText);
 
-      if (!response.ok) throw new Error('제출에 실패했습니다.');
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.log('❌ Error response body:', errorData);
+        throw new Error(`제출에 실패했습니다. (${response.status})`);
+      }
 
       // 성공 시 피드 페이지로 리디렉션
       const result = await response.json();
