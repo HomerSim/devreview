@@ -15,11 +15,12 @@ import { ConfirmModal } from '@/components/ui/confirm-modal';
 
 // Hooks
 import { usePortfolioForm } from '@/hooks/usePortfolioForm';
+import { withAuth } from '@/hooks/useAuth';
 
 // Constants
 import { PORTFOLIO_CATEGORIES } from '@/constants/categories';
 
-export default function CreatePortfolioPage() {
+function CreatePortfolioPage() {
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
   }>({ isOpen: false });
@@ -199,3 +200,5 @@ export default function CreatePortfolioPage() {
     </div>
   );
 }
+
+export default withAuth(CreatePortfolioPage);

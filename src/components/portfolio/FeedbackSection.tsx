@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Send, Star, ThumbsUp } from 'lucide-react';
 import { Feedback, FeedbackResponse } from '@/types/portfolio';
 import { formatRelativeTime } from '@/lib/utils/date';
+import { useAuth } from '@/hooks/useAuth';
+import { LoginPrompt } from '@/components/auth/LoginPrompt';
 
 interface FeedbackSectionProps {
   portfolioId: string;
@@ -54,6 +56,7 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const { isAuthenticated } = useAuth();
   
   // 🎯 페이징 관련 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -150,7 +153,7 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
   };
 
   const handleSubmitFeedback = async () => {
-    if (!newFeedback.trim() || rating === 0) return;
+    if (!isAuthenticated || !newFeedback.trim() || rating === 0) return;
 
     setIsSubmitting(true);
     try {
@@ -159,6 +162,7 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // 🍪 쿠키 포함
         body: JSON.stringify({
           content: newFeedback,
           rating: rating
@@ -212,75 +216,88 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">피드백 작성</h3>
         
-        {/* 🎯 성공/에러 메시지 표시 영역 */}
-        {successMessage && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 transition-all duration-300 ease-in-out">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-green-700 text-sm font-medium">{successMessage}</span>
-          </div>
-        )}
-        
-        {errorMessage && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 transition-all duration-300 ease-in-out">
-            <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-            <span className="text-red-700 text-sm font-medium">{errorMessage}</span>
-            <button 
-              onClick={() => setErrorMessage('')}
-              className="ml-auto text-red-400 hover:text-red-600 text-sm font-medium transition-colors"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              평점
-            </label>
-            <div className="flex items-center space-x-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  onClick={() => setRating(star)}
-                  disabled={isSubmitting}
-                  className="focus:outline-none disabled:cursor-not-allowed"
-                >
-                  <Star
-                    className={`w-6 h-6 transition-colors ${
-                      star <= rating
-                        ? 'text-yellow-400 fill-current'
-                        : 'text-gray-300 hover:text-yellow-200'
-                    }`}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              피드백 내용
-            </label>
-            <textarea
-              value={newFeedback}
-              onChange={(e) => setNewFeedback(e.target.value)}
-              rows={4}
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base disabled:bg-gray-100"
-              placeholder="건설적인 피드백을 작성해주세요..."
+        {!isAuthenticated ? (
+          // 🔐 로그인하지 않은 사용자를 위한 UI
+          <div className="text-center py-8">
+            <LoginPrompt 
+              message="피드백을 작성하려면 로그인이 필요합니다" 
+              action="로그인하고 피드백 작성하기"
             />
           </div>
+        ) : (
+          // ✅ 로그인한 사용자를 위한 폼
+          <>
+            {/* 🎯 성공/에러 메시지 표시 영역 */}
+            {successMessage && (
+              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 transition-all duration-300 ease-in-out">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-green-700 text-sm font-medium">{successMessage}</span>
+              </div>
+            )}
+            
+            {errorMessage && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 transition-all duration-300 ease-in-out">
+                <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                <span className="text-red-700 text-sm font-medium">{errorMessage}</span>
+                <button 
+                  onClick={() => setErrorMessage('')}
+                  className="ml-auto text-red-400 hover:text-red-600 text-sm font-medium transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
 
-          <button
-            onClick={handleSubmitFeedback}
-            disabled={!newFeedback.trim() || rating === 0 || isSubmitting}
-            className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
-          >
-            <Send className="w-4 h-4" />
-            {isSubmitting ? '등록 중...' : '피드백 등록'}
-          </button>
-        </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  평점
+                </label>
+                <div className="flex items-center space-x-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setRating(star)}
+                      disabled={isSubmitting}
+                      className="focus:outline-none disabled:cursor-not-allowed"
+                    >
+                      <Star
+                        className={`w-6 h-6 transition-colors ${
+                          star <= rating
+                            ? 'text-yellow-400 fill-current'
+                            : 'text-gray-300 hover:text-yellow-200'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  피드백 내용
+                </label>
+                <textarea
+                  value={newFeedback}
+                  onChange={(e) => setNewFeedback(e.target.value)}
+                  rows={4}
+                  disabled={isSubmitting}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base disabled:bg-gray-100"
+                  placeholder="건설적인 피드백을 작성해주세요..."
+                />
+              </div>
+
+              <button
+                onClick={handleSubmitFeedback}
+                disabled={!newFeedback.trim() || rating === 0 || isSubmitting}
+                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <Send className="w-4 h-4" />
+                {isSubmitting ? '등록 중...' : '피드백 등록'}
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* 피드백 목록 */}

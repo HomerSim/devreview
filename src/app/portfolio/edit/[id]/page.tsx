@@ -12,6 +12,7 @@ import { CategorySelect } from '@/components/ui/category-select';
 import { TechStackSelector } from '@/components/tech-stack-selector';
 import { PageHeader } from '@/components/page-header';
 import { ConfirmModal } from '@/components/ui/confirm-modal';
+import { withAuth } from '@/hooks/useAuth';
 
 // Constants
 import { PORTFOLIO_CATEGORIES, type PortfolioCategory } from '@/constants/categories';
@@ -35,7 +36,7 @@ interface FormErrors {
   techStack?: string;
 }
 
-export default function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
+function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
   const [portfolioId, setPortfolioId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -365,3 +366,5 @@ export default function EditPortfolioPage({ params }: { params: Promise<{ id: st
     </div>
   );
 }
+
+export default withAuth(EditPortfolioPage);

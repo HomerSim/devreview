@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { usePortfolioLike, usePortfolioStore } from '@/stores/portfolioStore';
+import { useAuth } from '@/hooks/useAuth';
+import { LoginTooltip } from '@/components/auth/LoginPrompt';
 
 interface LikeButtonProps {
   portfolioId: string;
@@ -12,6 +14,7 @@ interface LikeButtonProps {
 
 export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = false }: LikeButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated } = useAuth();
   
   // 🎯 Zustand에서 상태 가져오기
   const { likeCount, isLiked } = usePortfolioLike(portfolioId);
@@ -26,7 +29,8 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
   }, [portfolioId, initialLikeCount, initialIsLiked, initializePortfolio]);
 
   const handleLike = async () => {
-    if (isLoading) return;
+    // 🔐 로그인하지 않은 사용자는 여기서 처리하지 않음 (버튼이 비활성화됨)
+    if (!isAuthenticated || isLoading) return;
     
     const originalIsLiked = isLiked;
     const originalLikeCount = likeCount;
@@ -56,6 +60,7 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // 🍪 쿠키 포함
       });
 
       console.log('📡 Response received:', {
@@ -134,6 +139,21 @@ export function LikeButton({ portfolioId, initialLikeCount, initialIsLiked = fal
       setIsLoading(false);
     }
   };
+
+  // 🔐 로그인하지 않은 사용자를 위한 UI
+  if (!isAuthenticated) {
+    return (
+      <LoginTooltip message="로그인 후 좋아요를 누를 수 있습니다">
+        <button
+          disabled
+          className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm sm:text-base bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed"
+        >
+          <Heart className="w-4 h-4" />
+          좋아요 ({likeCount})
+        </button>
+      </LoginTooltip>
+    );
+  }
 
   return (
     <button

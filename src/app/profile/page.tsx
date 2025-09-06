@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { User, Settings, LogOut, Edit, Eye, Plus, Calendar, BookOpen, MessageCircle, Heart, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth, withAuth } from '@/hooks/useAuth';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 
-export default function ProfilePage() {
+function ProfilePage() {
   const { user, portfolios, isLoading, error, handleRoleSwitch, deletePortfolio } = useUserProfile();
   const { logout } = useAuth();
   
@@ -379,3 +379,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+export default withAuth(ProfilePage);
