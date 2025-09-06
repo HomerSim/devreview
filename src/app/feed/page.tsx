@@ -18,7 +18,7 @@ interface PortfolioSummary {
   feedback_count: number; // 피드백 개수
   user: {
     name: string;         // 작성자명
-  };
+  } | null; // 사용자가 탈퇴한 경우 null일 수 있음
 }
 
 interface ApiResponse {
@@ -270,7 +270,7 @@ export default function FeedPage() {
                 </div>
 
                 <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>{portfolio.user.name}</span>
+                  <span>{portfolio.user?.name || '탈퇴한 사용자'}</span>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1" title="피드백 개수">
                       <MessageCircle className="w-4 h-4" />

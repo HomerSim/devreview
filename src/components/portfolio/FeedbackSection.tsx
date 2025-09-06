@@ -341,8 +341,8 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
 }
 
 function FeedbackCard({ feedback }: { feedback: Feedback }) {
-  // 안전한 기본값 설정
-  const user = feedback.user || { name: '익명 사용자', role: 'JUNIOR' };
+  // 안전한 기본값 설정 - 사용자가 삭제된 경우 처리
+  const user = feedback.user || { name: '탈퇴한 사용자', role: null };
   const likeCount = feedback.like_count || 0;
   const rating = feedback.rating || 0;
 
@@ -351,9 +351,9 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
           <span className="font-medium text-gray-900 text-sm sm:text-base">
-            {user.name}
+            {user?.name || '탈퇴한 사용자'}
           </span>
-          {user.role === 'SENIOR' && (
+          {user?.role === 'SENIOR' && (
             <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">
               시니어
             </span>

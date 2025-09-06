@@ -46,7 +46,7 @@ export interface PortfolioDetail {
   user: {
     name: string;
     id: string;
-  };
+  } | null; // 사용자가 탈퇴한 경우 null일 수 있음
 }
 
 // 피드백 타입
@@ -58,7 +58,7 @@ export interface Feedback {
   user: {
     name: string;
     role: 'SENIOR' | 'JUNIOR';
-  };
+  } | null; // 사용자가 탈퇴한 경우 null일 수 있음
   like_count: number;
 }
 
