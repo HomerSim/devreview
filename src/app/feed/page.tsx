@@ -183,6 +183,13 @@ export default function FeedPage() {
             {filteredPortfolios.map((portfolio) => (
               <Link key={portfolio.id} href={`/portfolio/${portfolio.id}`}>
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                  {/* 카테고리 배지 */}
+                  <div className="mb-3">
+                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                      {portfolio.category}
+                    </span>
+                  </div>
+                  
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {portfolio.title}
                   </h3>

@@ -34,6 +34,7 @@ export interface PortfolioDetail {
   title: string;
   description: string;
   content: string;
+  category: string; // 카테고리 필드 추가
   github_url: string;
   deploy_url: string;
   tech_stack: string[];

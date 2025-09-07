@@ -206,6 +206,13 @@ function PortfolioHeader({ portfolio }: { portfolio: PortfolioDetail }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
       <div className="mb-4 sm:mb-6">
+        {/* 카테고리 배지 */}
+        <div className="mb-3">
+          <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
+            {portfolio.category}
+          </span>
+        </div>
+        
         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
           {portfolio.title}
         </h1>
