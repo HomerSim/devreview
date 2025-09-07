@@ -50,7 +50,7 @@ export function DeleteConfirmModal({
                 <div className="mt-2">
                   {portfolioTitle && (
                     <p className="text-sm text-gray-600 mb-3">
-                      <span className="font-medium">"{portfolioTitle}"</span>를 삭제하시겠습니까?
+                      <span className="font-medium">&quot;{portfolioTitle}&quot;</span>를 삭제하시겠습니까?
                     </p>
                   )}
                   

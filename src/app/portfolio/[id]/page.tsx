@@ -282,12 +282,13 @@ function PortfolioContent({ content }: { content: string }) {
         {children}
       </blockquote>
     ),
-    a: ({ href, children }: { href?: string; children: React.ReactNode }) => (
+    a: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children?: React.ReactNode }) => (
       <a 
         href={href} 
         className="text-blue-600 hover:text-blue-800 underline"
         target="_blank"
         rel="noopener noreferrer"
+        {...props}
       >
         {children}
       </a>
@@ -300,7 +301,7 @@ function PortfolioContent({ content }: { content: string }) {
         프로젝트 상세 설명
       </h2>
       <div className="max-w-none text-sm sm:text-base">
-        <ReactMarkdown components={markdownComponents}>
+        <ReactMarkdown components={markdownComponents as any}>
           {content}
         </ReactMarkdown>
       </div>

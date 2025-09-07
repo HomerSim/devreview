@@ -59,9 +59,9 @@ export default function OAuthTestPage() {
           <div className="prose prose-sm text-gray-600">
             <ul className="space-y-2">
               <li><strong>자동 토큰 갱신:</strong> 5분마다 토큰 상태를 확인하고, 만료된 경우 자동으로 갱신합니다.</li>
-              <li><strong>수동 토큰 갱신:</strong> "토큰 갱신" 버튼으로 언제든지 토큰을 갱신할 수 있습니다.</li>
-              <li><strong>연동 해제:</strong> "연동 해제" 버튼으로 OAuth 연동을 완전히 해제할 수 있습니다.</li>
-              <li><strong>상태 확인:</strong> "상태 확인" 버튼으로 최신 연동 상태를 확인할 수 있습니다.</li>
+              <li><strong>수동 토큰 갱신:</strong> &quot;토큰 갱신&quot; 버튼으로 언제든지 토큰을 갱신할 수 있습니다.</li>
+              <li><strong>연동 해제:</strong> &quot;연동 해제&quot; 버튼으로 OAuth 연동을 완전히 해제할 수 있습니다.</li>
+              <li><strong>상태 확인:</strong> &quot;상태 확인&quot; 버튼으로 최신 연동 상태를 확인할 수 있습니다.</li>
             </ul>
           </div>
         </div>
