@@ -9,6 +9,7 @@ import { formatDate, formatRelativeTime } from '@/lib/utils/date';
 import { FeedbackSection } from '@/components/portfolio/FeedbackSection';
 import { PortfolioSidebar } from './components/PortfolioSidebar';
 import { useAuth } from '@/hooks/useAuth';
+import { PortfolioDetailSkeleton } from '@/components/ui/skeleton';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -71,14 +72,7 @@ export default function PortfolioDetailPage({ params }: Props) {
   }, [params]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">포트폴리오를 불러오는 중...</p>
-        </div>
-      </div>
-    );
+    return <PortfolioDetailSkeleton />;
   }
 
   if (!portfolio) {

@@ -5,6 +5,7 @@ import { Search, Filter, Heart, MessageCircle, Plus, User, Menu, Eye } from 'luc
 import Link from 'next/link';
 import { TECH_CATEGORIES } from '@/constants/categories';
 import { useAuth } from '@/hooks/useAuth';
+import { FeedSkeletonGrid } from '@/components/ui/skeleton';
 
 // 🎯 Feed UI에서만 사용하는 필드들만 포함
 interface PortfolioSummary {
@@ -33,11 +34,14 @@ export default function FeedPage() {
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [searchQuery, setSearchQuery] = useState('');
   const [portfolios, setPortfolios] = useState<PortfolioSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const fetchPortfolios = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch('/api/portfolios');
         
         if (!response.ok) {
@@ -57,6 +61,8 @@ export default function FeedPage() {
         console.error('❌ Error fetching portfolios:', error);
         // 오류 발생 시 빈 배열 설정
         setPortfolios([]);
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -69,6 +75,17 @@ export default function FeedPage() {
                          portfolio.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+
+  // 검색/필터링 시 로딩 효과
+  useEffect(() => {
+    if (!isLoading && portfolios.length > 0) {
+      setIsFiltering(true);
+      const timer = setTimeout(() => {
+        setIsFiltering(false);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedFilter, searchQuery, isLoading, portfolios.length]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br">
@@ -153,59 +170,63 @@ export default function FeedPage() {
         </div>
 
         {/* Portfolio Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredPortfolios.map((portfolio) => (
-            <Link key={portfolio.id} href={`/portfolio/${portfolio.id}`}>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {portfolio.title}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                  {portfolio.description}
-                </p>
-                
-                <div className="mb-4">
-                  <div className="flex flex-wrap gap-2">
-                    {portfolio.tech_stack.slice(0, 3).map((tech: string) => (
-                      <span
-                        key={tech}
-                        className="px-2 py-1 bg-blue-50 text-blue-500 text-xs rounded-md"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                    {portfolio.tech_stack.length > 3 && (
-                      <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
-                        +{portfolio.tech_stack.length - 3}
-                      </span>
-                    )}
+        {isLoading || isFiltering ? (
+          <FeedSkeletonGrid />
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredPortfolios.map((portfolio) => (
+              <Link key={portfolio.id} href={`/portfolio/${portfolio.id}`}>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {portfolio.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {portfolio.description}
+                  </p>
+                  
+                  <div className="mb-4">
+                    <div className="flex flex-wrap gap-2">
+                      {portfolio.tech_stack.slice(0, 3).map((tech: string) => (
+                        <span
+                          key={tech}
+                          className="px-2 py-1 bg-blue-50 text-blue-500 text-xs rounded-md"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                      {portfolio.tech_stack.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
+                          +{portfolio.tech_stack.length - 3}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>{portfolio.user?.name || '탈퇴한 사용자'}</span>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1" title="피드백 개수">
-                      <MessageCircle className="w-4 h-4" />
-                      <span>{portfolio.feedback_count}</span>
-                    </div>
-                    <div className="flex items-center gap-1" title="좋아요 개수">
-                      <Heart className="w-4 h-4" />
-                      <span>{portfolio.like_count}</span>
-                    </div>
-                    <div className="flex items-center gap-1" title="조회수">
-                      <Eye className="w-4 h-4" />
-                      <span>{portfolio.view_count}</span>
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <span>{portfolio.user?.name || '탈퇴한 사용자'}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1" title="피드백 개수">
+                        <MessageCircle className="w-4 h-4" />
+                        <span>{portfolio.feedback_count}</span>
+                      </div>
+                      <div className="flex items-center gap-1" title="좋아요 개수">
+                        <Heart className="w-4 h-4" />
+                        <span>{portfolio.like_count}</span>
+                      </div>
+                      <div className="flex items-center gap-1" title="조회수">
+                        <Eye className="w-4 h-4" />
+                        <span>{portfolio.view_count}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
-        {filteredPortfolios.length === 0 && (
+        {!isLoading && !isFiltering && filteredPortfolios.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
               <Filter className="w-12 h-12 mx-auto" />
