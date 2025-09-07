@@ -53,9 +53,7 @@ function AuthCallbackContent() {
           return;
         }
 
-        console.log('Auth successful with cookies:', { userId, provider });
-
-        // � 로그인 성공 후 사용자 정보 업데이트
+        // 로그인 성공 후 사용자 정보 업데이트
         try {
           const userResponse = await fetch('/api/auth/me', {
             credentials: 'include',
@@ -64,13 +62,12 @@ function AuthCallbackContent() {
           if (userResponse.ok) {
             const userData = await userResponse.json();
             setUser(userData);
-            console.log('✅ User data updated:', userData);
           }
         } catch (error) {
           console.error('Failed to fetch user data:', error);
         }
 
-        // �🚀 바로 feed 페이지로 이동
+        // 🚀 바로 feed 페이지로 이동
         router.push('/feed');
 
       } catch (err) {

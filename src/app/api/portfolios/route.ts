@@ -41,7 +41,6 @@ export async function POST(req: NextRequest) {
     
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(req);
-    console.log("📥 Incoming portfolio creation request with token:", token ? 'Present' : 'Missing');
     
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios`;
     const response = await fetch(apiUrl, {
@@ -54,10 +53,6 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    console.log("🚀 Creating portfolio with data:", body);
-    console.log("🔑 Token from cookie:", token ? 'Present' : 'Missing');
-
-    
     if (!response.ok) {
       const errorData = await response.json();
       console.error("❌ Backend error response:", errorData);

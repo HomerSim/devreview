@@ -66,7 +66,6 @@ function CreatePortfolioPage() {
     }
     
     // 2단계: 검증 통과 시에만 확인 모달 열기
-    console.log('✅ 유효성 검증 통과 - 확인 모달 표시');
     openConfirmModal();
   };
 

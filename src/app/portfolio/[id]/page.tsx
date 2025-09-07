@@ -259,7 +259,7 @@ function PortfolioContent({ content }: { content: string }) {
         프로젝트 상세 설명
       </h2>
       <div className="max-w-none text-sm sm:text-base">
-        <ReactMarkdown components={markdownComponents as any}>
+        <ReactMarkdown components={markdownComponents as React.ComponentProps<typeof ReactMarkdown>['components']}>
           {content}
         </ReactMarkdown>
       </div>

@@ -11,43 +11,6 @@ interface FeedbackSectionProps {
   portfolioId: string;
 }
 
-// 샘플 피드백 데이터
-const SAMPLE_FEEDBACKS: Feedback[] = [
-  {
-    id: "feedback-1",
-    content: '전반적으로 잘 구현된 프로젝트입니다. 특히 동시성 문제를 Redis 분산 락으로 해결한 부분이 인상적입니다. 다만 에러 핸들링 부분을 더 체계적으로 구현하면 좋을 것 같습니다.',
-    rating: 5,
-    created_at: '2024-08-16T10:30:00.000Z',
-    user: {
-      name: 'Senior_Dev_A',
-      role: 'SENIOR'
-    },
-    like_count: 15
-  },
-  {
-    id: "feedback-2",
-    content: '코드 구조가 깔끔하고 주석도 잘 되어있네요. 테스트 코드 작성도 고려해보시면 더 완성도 높은 프로젝트가 될 것 같습니다.',
-    rating: 4,
-    created_at: '2024-08-17T14:22:00.000Z',
-    user: {
-      name: 'Tech_Mentor_B',
-      role: 'JUNIOR'
-    },
-    like_count: 8
-  },
-  {
-    id: "feedback-3",
-    content: 'UI/UX가 직관적이고 사용하기 편합니다. 반응형 디자인도 잘 적용되어 있어요. 다만 로딩 상태 처리를 좀 더 개선하면 사용자 경험이 더 좋아질 것 같습니다.',
-    rating: 4,
-    created_at: '2024-08-18T09:15:00.000Z',
-    user: {
-      name: 'UX_Designer_C',
-      role: 'JUNIOR'
-    },
-    like_count: 12
-  }
-];
-
 export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,16 +61,16 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
         
       } else {
         if (!isAppend) {
-          console.log('📝 Using sample feedback data due to API error');
-          setFeedbacks(SAMPLE_FEEDBACKS);
+          // API 오류 시 빈 배열로 설정
+          setFeedbacks([]);
           setHasMoreData(false);
         }
       }
     } catch (error) {
       console.error('❌ Error loading feedbacks:', error);
       if (!isAppend) {
-        console.log('📝 Using sample feedback data');
-        setFeedbacks(SAMPLE_FEEDBACKS);
+        // 네트워크 오류 시 빈 배열로 설정
+        setFeedbacks([]);
         setHasMoreData(false);
       }
     } finally {

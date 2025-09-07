@@ -11,7 +11,6 @@ export async function POST(
     
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(req);
-    console.log("❤️ Like request with token:", token ? 'Present' : 'Missing');
     
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${id}/like`;
     
@@ -67,7 +66,6 @@ export async function DELETE(
     
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(req);
-    console.log("💔 Unlike request with token:", token ? 'Present' : 'Missing');
     
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${id}/like`;
     

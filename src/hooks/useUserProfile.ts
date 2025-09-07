@@ -60,8 +60,6 @@ export const useUserProfile = () => {
       
       const apiResponse: UserProfileApiResponse = await response.json();
       
-      console.log('🔍 User Profile API Response:', apiResponse);
-
       if (!apiResponse.success) {
         throw new Error(apiResponse.message || 'Failed to fetch user profile');
       }
@@ -93,8 +91,6 @@ export const useUserProfile = () => {
       
       const apiResponse: UserPortfoliosApiResponse = await response.json();
       
-      console.log('🔍 User Portfolios API Response:', apiResponse);
-
       if (!apiResponse.success) {
         throw new Error(apiResponse.message || 'Failed to fetch user portfolios');
       }

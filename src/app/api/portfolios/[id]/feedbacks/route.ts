@@ -50,7 +50,6 @@ export async function POST(
     
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(req);
-    console.log("📥 Creating feedback with token:", token ? 'Present' : 'Missing');
     
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/feedbacks`;
     const response = await fetch(apiUrl, {

@@ -8,9 +8,6 @@ export async function GET(req: NextRequest) {
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(req);
     
-    console.log('🔍 Fetching user portfolios from:', apiUrl);
-    console.log('🔑 Token from cookie:', token ? 'Present' : 'Missing');
-    
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
@@ -25,7 +22,6 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('✅ User portfolios API response:', data);
     
     return NextResponse.json(data);
     

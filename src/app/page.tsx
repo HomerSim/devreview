@@ -9,7 +9,6 @@ export default function LandingPage() {
       const response = await fetch('/api/auth/sso/google');
       const data = await response.json();
       
-      console.log(data);
       if (data.success && data.data?.authUrl) {
         window.location.href = data.data.authUrl;
       } else {

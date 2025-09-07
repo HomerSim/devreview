@@ -26,11 +26,8 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
     // 🔧 이미 존재하는 데이터가 동일하면 업데이트하지 않음 (불필요한 리렌더링 방지)
     const existing = get().portfolios[id];
     if (existing && existing.likeCount === likeCount && existing.isLiked === isLiked) {
-      console.log('🏪 Zustand: 포트폴리오 이미 초기화됨 (스킵)', { id, likeCount, isLiked });
       return;
     }
-    
-    console.log('🏪 Zustand: 포트폴리오 초기화', { id, likeCount, isLiked });
     
     set((state) => ({
       portfolios: {
@@ -41,8 +38,6 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
   },
     
   updateLikeStatus: (id, likeCount, isLiked) => {
-    console.log('🔄 Zustand: 좋아요 상태 업데이트', { id, likeCount, isLiked });
-    
     set((state) => ({
       portfolios: {
         ...state.portfolios,

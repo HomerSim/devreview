@@ -95,7 +95,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
-        console.log('✅ Auth state refreshed:', userData);
       } else {
         setUser(null);
         console.log('❌ Auth state cleared');

@@ -8,9 +8,6 @@ export async function GET(req: NextRequest) {
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(req);
     
-    console.log('🔍 Fetching current user from:', apiUrl);
-    console.log('🔑 Token from cookie:', token ? 'Present' : 'Missing');
-    
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
@@ -29,7 +26,6 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('✅ Current user data:', data);
     return NextResponse.json(data);
   } catch (error) {
     console.error('Get current user error:', error);

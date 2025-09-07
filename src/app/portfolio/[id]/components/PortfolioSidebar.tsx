@@ -33,14 +33,6 @@ export function PortfolioSidebar({ portfolio }: PortfolioSidebarProps) {
     initializePortfolio(portfolio.id, portfolio.like_count, portfolio.is_liked || false);
   }, [portfolio.id, portfolio.like_count, portfolio.is_liked, initializePortfolio]);
 
-  console.log('🎯 PortfolioSidebar 렌더링 (Zustand):', {
-    portfolioId: portfolio.id,
-    zustandLikeCount: likeCount,
-    zustandIsLiked: isLiked,
-    initialLikeCount: portfolio.like_count,
-    initialIsLiked: portfolio.is_liked,
-  });
-
   return (
     <div className="space-y-6">
       {/* 통계 - 실시간 Zustand 상태 반영 */}

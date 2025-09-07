@@ -72,7 +72,6 @@ function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
   // 포트폴리오 데이터 로드
   useEffect(() => {
     if (!portfolioId || !user) {
-      console.log('🚨 포트폴리오 로드 조건 미충족:', { portfolioId, user });
       return;
     }
 
@@ -80,8 +79,6 @@ function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
       try {
         setIsLoading(true);
         setOwnershipError('');
-        
-        console.log('📡 포트폴리오 데이터 로드 시작:', portfolioId);
         
         // 🍪 쿠키 기반: credentials 'include'로 쿠키 자동 전송
         const response = await fetch(`/api/portfolios/${portfolioId}`, {
@@ -104,23 +101,9 @@ function EditPortfolioPage({ params }: { params: Promise<{ id: string }> }) {
         const result = await response.json();
         const portfolio = result.data;
 
-        console.log('🔍 소유권 확인 디버깅:', {
-          currentUser: user,
-          currentUserId: (user as any)?.data?.id || user?.id,
-          portfolio: portfolio,
-          portfolioUserId: portfolio.user_id,
-          portfolioUserObject: portfolio.user,
-          portfolioUserObjectId: portfolio.user?.id,
-        });
-
         // 🔒 소유권 확인: 현재 로그인한 사용자와 포트폴리오 작성자가 같은지 확인
         const portfolioUserId = portfolio.user_id || portfolio.user?.id;
-        const currentUserId = (user as any)?.data?.id || user?.id;
-        console.log('🔒 소유권 비교:', {
-          portfolioUserId,
-          currentUserId,
-          isEqual: portfolioUserId === currentUserId
-        });
+        const currentUserId = (user as { data?: { id?: string }; id?: string })?.data?.id || (user as { data?: { id?: string }; id?: string })?.id;
 
         if (portfolioUserId !== currentUserId) {
           setOwnershipError('본인의 포트폴리오만 수정할 수 있습니다.');

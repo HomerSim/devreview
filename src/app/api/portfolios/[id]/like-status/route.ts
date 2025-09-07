@@ -13,13 +13,6 @@ export async function GET(request: NextRequest, context: Context) {
     
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(request);
-    
-    console.log('🔍 좋아요 상태 확인 요청:', {
-      portfolioId: id,
-      hasAuth: token ? 'Present' : 'Missing',
-      timestamp: new Date().toISOString(),
-      userAgent: request.headers.get('user-agent')
-    });
 
     // 실제 백엔드 API에 좋아요 상태 확인 요청
     const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/portfolios/${id}/like-status`, {
@@ -53,13 +46,6 @@ export async function GET(request: NextRequest, context: Context) {
 
     const data = await backendResponse.json();
     
-    console.log('✅ 좋아요 상태 확인 성공:', {
-      portfolioId: id,
-      isLiked: data.is_liked,
-      likeCount: data.like_count,
-      timestamp: new Date().toISOString()
-    });
-
     // 🚨 캐시 방지 헤더와 함께 응답
     return NextResponse.json(data, {
       headers: {

@@ -101,8 +101,6 @@ export const usePortfolioForm = () => {
         tech_stack: selectedTechStack,     // camelCase → snake_case
       };
 
-      console.log('🚀 Creating portfolio with data:', portfolioData);
-
       // 🍪 쿠키 기반: credentials 'include'로 쿠키 자동 전송
       const response = await fetch('/api/portfolios', {
         method: 'POST',
@@ -113,19 +111,13 @@ export const usePortfolioForm = () => {
         body: JSON.stringify(portfolioData),
       });
 
-      console.log('Response:', response);
-      console.log('Response status:', response.status);
-      console.log('Response statusText:', response.statusText);
-
       if (!response.ok) {
         const errorData = await response.text();
-        console.log('❌ Error response body:', errorData);
         throw new Error(`제출에 실패했습니다. (${response.status})`);
       }
 
       // 성공 시 피드 페이지로 리디렉션
       const result = await response.json();
-      console.log('✅ 포트폴리오 등록 성공:', result);
       
       // 피드 페이지로 부드럽게 이동
       router.push('/feed');
