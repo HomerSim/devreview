@@ -5,7 +5,6 @@ import { Search, Filter, Heart, MessageCircle, Plus, User, Menu, Eye } from 'luc
 import Link from 'next/link';
 import { TECH_CATEGORIES } from '@/constants/categories';
 import { useAuth } from '@/hooks/useAuth';
-import { FeedSkeletonGrid } from '@/components/ui/skeleton';
 
 // 🎯 Feed UI에서만 사용하는 필드들만 포함
 interface PortfolioSummary {
@@ -171,7 +170,14 @@ export default function FeedPage() {
 
         {/* Portfolio Grid */}
         {isLoading || isFiltering ? (
-          <FeedSkeletonGrid count={3} />
+          <div className="flex justify-center items-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">
+                {isLoading ? '포트폴리오를 불러오는 중...' : '검색 중...'}
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredPortfolios.map((portfolio) => (
