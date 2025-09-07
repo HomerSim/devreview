@@ -29,88 +29,6 @@ interface ApiResponse {
   total_pages: number;
 }
 
-// 🎯 Feed UI에 필요한 필드만 포함한 샘플 데이터
-const SAMPLE_PORTFOLIOS: PortfolioSummary[] = [
-  {
-    id: "sample-1",
-    category: "프론트엔드",
-    title: 'E-커머스 풀스택 웹사이트',
-    description: 'React와 Node.js로 만든 온라인 쇼핑몰입니다',
-    tech_stack: ['React', 'Node.js', 'MongoDB', 'Express'],
-    view_count: 156,
-    like_count: 28,
-    feedback_count: 5,
-    user: {
-      name: 'Anonymous_Dev_01'
-    }
-  },
-  {
-    id: "sample-2",
-    category: "AI/ML",
-    title: 'AI 기반 이미지 분류 앱',
-    description: 'TensorFlow를 활용한 실시간 이미지 인식 모바일 앱',
-    tech_stack: ['React Native', 'TensorFlow', 'Python', 'Firebase'],
-    view_count: 98,
-    like_count: 35,
-    feedback_count: 12,
-    user: {
-      name: 'Anonymous_Dev_02'
-    }
-  },
-  {
-    id: "sample-3",
-    category: "백엔드",
-    title: 'MSA 기반 배송 관리 시스템',
-    description: '마이크로서비스 아키텍처로 구현한 물류 관리 시스템',
-    tech_stack: ['Spring Boot', 'Docker', 'Kubernetes', 'PostgreSQL'],
-    view_count: 203,
-    like_count: 42,
-    feedback_count: 8,
-    user: {
-      name: 'Anonymous_Dev_03'
-    }
-  },
-  {
-    id: "sample-4",
-    category: "프론트엔드",
-    title: '실시간 채팅 앱',
-    description: 'Socket.io를 이용한 실시간 채팅 애플리케이션',
-    tech_stack: ['Vue.js', 'Socket.io', 'Redis', 'Node.js'],
-    view_count: 87,
-    like_count: 19,
-    feedback_count: 3,
-    user: {
-      name: 'Anonymous_Dev_04'
-    }
-  },
-  {
-    id: "sample-5",
-    category: "모바일",
-    title: '피트니스 트래킹 앱',
-    description: 'React Native로 개발한 개인 운동 기록 관리 앱',
-    tech_stack: ['React Native', 'TypeScript', 'Firebase', 'Redux'],
-    view_count: 124,
-    like_count: 31,
-    feedback_count: 7,
-    user: {
-      name: 'Anonymous_Dev_05'
-    }
-  },
-  {
-    id: "sample-6",
-    category: "DevOps",
-    title: 'CI/CD 파이프라인 구축',
-    description: 'Jenkins와 Docker를 활용한 자동화 배포 시스템',
-    tech_stack: ['Jenkins', 'Docker', 'AWS', 'Terraform'],
-    view_count: 167,
-    like_count: 53,
-    feedback_count: 15,
-    user: {
-      name: 'Anonymous_Dev_06'
-    }
-  }
-];
-
 export default function FeedPage() {
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [searchQuery, setSearchQuery] = useState('');
@@ -127,23 +45,18 @@ export default function FeedPage() {
         }
         
         const data = await response.json();
-        console.log('🔍 Full API Response:', data);
-        console.log('📊 Portfolio Data:', data.data);
-        console.log('📈 Total Count:', data.total);
         
         // ✅ 실제 포트폴리오 배열만 설정
         if (data.data && data.data.length > 0) {
           setPortfolios(data.data);
         } else {
-          // API 데이터가 없으면 샘플 데이터 사용
-          console.log('📝 Using sample data as fallback');
-          setPortfolios(SAMPLE_PORTFOLIOS);
+          // API 데이터가 없으면 빈 배열 설정
+          setPortfolios([]);
         }
       } catch (error) {
         console.error('❌ Error fetching portfolios:', error);
-        console.log('📝 Using sample data as fallback');
-        // 오류 발생 시 샘플 데이터 사용
-        setPortfolios(SAMPLE_PORTFOLIOS);
+        // 오류 발생 시 빈 배열 설정
+        setPortfolios([]);
       }
     };
     

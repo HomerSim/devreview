@@ -14,43 +14,6 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-// 샘플 포트폴리오 데이터 (API 실패 시 사용)
-const SAMPLE_PORTFOLIO: PortfolioDetail = {
-  id: "sample-1",
-  title: 'E-커머스 풀스택 웹사이트',
-  description: 'React와 Node.js로 만든 온라인 쇼핑몰입니다',
-  content: `## 프로젝트 소개
-현대적인 E-커머스 플랫폼을 구축하여 사용자가 편리하게 상품을 검색하고 구매할 수 있는 온라인 쇼핑몰을 개발했습니다.
-
-## 주요 기능
-- **사용자 인증**: JWT 기반 회원가입/로그인
-- **상품 관리**: 카테고리별 상품 분류 및 검색
-- **장바구니**: 실시간 장바구니 업데이트
-- **결제 시스템**: 다양한 결제 방식 지원
-- **주문 관리**: 주문 내역 및 배송 추적
-
-## 기술적 도전과제
-1. **성능 최적화**: React.memo와 useMemo를 활용한 렌더링 최적화
-2. **상태 관리**: Redux Toolkit을 통한 복잡한 상태 관리
-3. **SEO 최적화**: Next.js의 SSR/ISR을 활용한 검색 엔진 최적화
-4. **보안**: XSS, CSRF 공격 방지를 위한 보안 조치
-
-## 학습한 내용
-이 프로젝트를 통해 풀스택 웹 개발의 전반적인 과정을 경험했습니다. 특히 사용자 경험을 고려한 UI/UX 설계와 확장 가능한 백엔드 아키텍처 구성에 대해 깊이 있게 학습할 수 있었습니다.`,
-  
-  tech_stack: ['React', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'Next.js', 'Tailwind CSS'],
-  github_url: 'https://github.com/user/ecommerce-project',
-  deploy_url: 'https://ecommerce-demo.vercel.app',
-  view_count: 247,
-  like_count: 15,
-  created_at: '2024-01-15T10:30:00Z',
-  updated_at: '2024-01-20T14:22:00Z',
-  user: {
-    id: 'user1',
-    name: '김개발',
-  }
-};
-
 // 🎯 메인 컴포넌트 (클라이언트 컴포넌트로 변경)
 export default function PortfolioDetailPage({ params }: Props) {
   const [portfolio, setPortfolio] = useState<PortfolioDetail | null>(null);
@@ -62,13 +25,11 @@ export default function PortfolioDetailPage({ params }: Props) {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('🔄 Page focused, refreshing auth state...');
         refreshAuthState();
       }
     };
 
     const handleFocus = () => {
-      console.log('🔄 Window focused, refreshing auth state...');
       refreshAuthState();
     };
 
@@ -91,19 +52,16 @@ export default function PortfolioDetailPage({ params }: Props) {
         });
 
         if (!response.ok) {
-          console.log('API 실패, 샘플 데이터 사용');
-          setPortfolio(SAMPLE_PORTFOLIO);
+          setError('포트폴리오를 불러올 수 없습니다.');
           setLoading(false);
           return;
         }
 
         const data = await response.json();
-        console.log('📡 포트폴리오 상세 데이터:', data);
         setPortfolio(data.data || data);
       } catch (error) {
         console.error('포트폴리오 조회 에러:', error);
         setError('포트폴리오를 불러올 수 없습니다.');
-        setPortfolio(SAMPLE_PORTFOLIO);
       } finally {
         setLoading(false);
       }
