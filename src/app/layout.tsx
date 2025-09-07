@@ -16,6 +16,28 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "DevReview - 시니어의 진짜 피드백으로 취업 관문을 뚫으세요",
   description: "AI는 줄 수 없는, 시니어의 진짜 피드백으로 포트폴리오를 개선하고 취업에 성공하세요",
+  icons: {
+    icon: [
+      {
+        url: '/favicon.png',
+        sizes: '32x32',
+        type: 'image/png',
+      },
+    ],
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
+  openGraph: {
+    title: "DevReview",
+    description: "AI는 줄 수 없는, 시니어의 진짜 피드백으로 포트폴리오를 개선하고 취업에 성공하세요",
+    type: 'website',
+    locale: 'ko_KR',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "DevReview",
+    description: "AI는 줄 수 없는, 시니어의 진짜 피드백으로 포트폴리오를 개선하고 취업에 성공하세요",
+  },
 };
 
 export default function RootLayout({

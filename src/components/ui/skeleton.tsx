@@ -46,10 +46,10 @@ export function PortfolioCardSkeleton() {
 }
 
 // 피드 페이지용 스켈레톤 그리드
-export function FeedSkeletonGrid() {
+export function FeedSkeletonGrid({ count = 3 }: { count?: number }) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, index) => (
+      {Array.from({ length: count }).map((_, index) => (
         <PortfolioCardSkeleton key={index} />
       ))}
     </div>
