@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Heart, MessageCircle, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePortfolioLike, usePortfolioStore } from '@/stores/portfolioStore';
@@ -10,9 +10,10 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface PortfolioSidebarProps {
   portfolio: PortfolioDetail;
+  onDeleteClick?: (portfolioId: string, portfolioTitle: string, feedbackCount: number) => void;
 }
 
-export function PortfolioSidebar({ portfolio }: PortfolioSidebarProps) {
+export function PortfolioSidebar({ portfolio, onDeleteClick }: PortfolioSidebarProps) {
   // 🎯 Zustand에서 실시간 좋아요 상태 가져오기
   const { likeCount, isLiked } = usePortfolioLike(portfolio.id);
   
@@ -22,11 +23,26 @@ export function PortfolioSidebar({ portfolio }: PortfolioSidebarProps) {
   // 🔐 현재 사용자 정보
   const { user, isAuthenticated } = useAuth();
   
-  // 🔒 소유자인지 확인 (두 가지 방법으로 체크)
-  const isOwner = isAuthenticated && user && (
-    portfolio.user_id === user.id || // API에서 user_id가 있는 경우
-    (portfolio.user && portfolio.user.id === user.id) // user 객체 안의 id로 확인
-  );
+  // 🔒 백엔드에서 검증된 소유자 여부 사용 (보안)
+  const isOwner = useMemo(() => {
+    // 백엔드에서 제공하는 is_owner 필드 사용
+    // true: 로그인 사용자 === 포트폴리오 작성자
+    // false: 다른 사용자 (로그인했지만 소유자가 아님)  
+    // null: 로그인하지 않은 사용자
+    return portfolio.is_owner === true;
+  }, [portfolio.is_owner]);
+
+  // 🔍 디버깅용 로그 (개발 환경에서만)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 PortfolioSidebar Debug:', {
+        'portfolio.is_owner': portfolio.is_owner,
+        'calculated isOwner': isOwner,
+        'isAuthenticated': isAuthenticated,
+        'user?.id': user?.id,
+      });
+    }
+  }, [portfolio.is_owner, isOwner, isAuthenticated, user]);
   
   // 🎯 컴포넌트 마운트 시 초기 데이터로 스토어 초기화
   useEffect(() => {
@@ -64,7 +80,7 @@ export function PortfolioSidebar({ portfolio }: PortfolioSidebarProps) {
         />
       </div>
 
-      {/* 🔒 소유자 전용 관리 메뉴 */}
+      {/* 🔒 소유자 전용 관리 메뉴 (백엔드 검증) */}
       {isOwner && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">관리</h3>
@@ -81,10 +97,16 @@ export function PortfolioSidebar({ portfolio }: PortfolioSidebarProps) {
             
             <button
               onClick={() => {
-                if (window.confirm('정말로 이 포트폴리오를 삭제하시겠습니까?')) {
-                  // TODO: 삭제 기능 구현
-                  console.log('포트폴리오 삭제:', portfolio.id);
-                  alert('삭제 기능은 추후 구현 예정입니다.');
+                if (onDeleteClick) {
+                  // 포트폴리오에서 피드백 수를 가져오거나 0으로 기본값 설정
+                  const feedbackCount = portfolio.feedback_count || 0;
+                  onDeleteClick(portfolio.id, portfolio.title, feedbackCount);
+                } else {
+                  // 기존 로직 (fallback)
+                  if (window.confirm('정말로 이 포트폴리오를 삭제하시겠습니까?')) {
+                    console.log('포트폴리오 삭제:', portfolio.id);
+                    alert('삭제 기능은 추후 구현 예정입니다.');
+                  }
                 }
               }}
               className="flex items-center gap-3 w-full p-3 text-left bg-red-50 hover:bg-red-100 rounded-lg transition-colors group"

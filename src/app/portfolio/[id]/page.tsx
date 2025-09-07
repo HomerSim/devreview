@@ -10,6 +10,7 @@ import { FeedbackSection } from '@/components/portfolio/FeedbackSection';
 import { PortfolioSidebar } from './components/PortfolioSidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { PortfolioDetailSkeleton } from '@/components/ui/skeleton';
+import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -21,6 +22,15 @@ export default function PortfolioDetailPage({ params }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const { refreshAuthState } = useAuth();
+
+  // 삭제 모달 상태 추가
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    portfolioId?: string;
+    portfolioTitle?: string;
+    feedbackCount?: number;
+    isDeleting?: boolean;
+  }>({ isOpen: false });
 
   // 🔄 페이지 포커스 시 인증 상태 새로고침
   useEffect(() => {
@@ -59,6 +69,7 @@ export default function PortfolioDetailPage({ params }: Props) {
         }
 
         const data = await response.json();
+        console.log('🔍 Portfolio API Response:', data); // 디버깅용
         setPortfolio(data.data || data);
       } catch (error) {
         console.error('포트폴리오 조회 에러:', error);
@@ -70,6 +81,48 @@ export default function PortfolioDetailPage({ params }: Props) {
 
     fetchPortfolio();
   }, [params]);
+
+  // 삭제 버튼 클릭 처리
+  const handleDeleteClick = (portfolioId: string, portfolioTitle: string, feedbackCount: number) => {
+    setDeleteModal({
+      isOpen: true,
+      portfolioId,
+      portfolioTitle,
+      feedbackCount,
+      isDeleting: false
+    });
+  };
+
+  // 삭제 확인 처리
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.portfolioId) return;
+
+    try {
+      setDeleteModal(prev => ({ ...prev, isDeleting: true }));
+      
+      const response = await fetch(`/api/portfolios/${deleteModal.portfolioId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('포트폴리오 삭제에 실패했습니다.');
+      }
+
+      // 삭제 성공 시 피드 페이지로 이동
+      window.location.href = '/feed';
+      
+    } catch (err) {
+      console.error('Delete portfolio failed:', err);
+      alert('포트폴리오 삭제에 실패했습니다. 다시 시도해주세요.');
+      setDeleteModal(prev => ({ ...prev, isDeleting: false }));
+    }
+  };
+
+  // 모달 닫기
+  const handleDeleteCancel = () => {
+    setDeleteModal({ isOpen: false });
+  };
 
   if (loading) {
     return <PortfolioDetailSkeleton />;
@@ -126,9 +179,24 @@ export default function PortfolioDetailPage({ params }: Props) {
           </div>
 
           {/* 사이드바 - Zustand로 실시간 좋아요 수 공유 */}
-          <PortfolioSidebar portfolio={portfolio} />
+          <PortfolioSidebar 
+            portfolio={portfolio} 
+            onDeleteClick={handleDeleteClick}
+          />
         </div>
       </main>
+
+      {/* 삭제 확인 모달 */}
+      <DeleteConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="포트폴리오 삭제"
+        message="삭제된 포트폴리오는 복구할 수 없습니다."
+        portfolioTitle={deleteModal.portfolioTitle}
+        feedbackCount={deleteModal.feedbackCount || 0}
+        isLoading={deleteModal.isDeleting || false}
+      />
     </div>
   );
 }
