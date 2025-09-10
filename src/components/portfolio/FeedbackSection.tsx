@@ -460,7 +460,7 @@ function FeedbackCard({
   isDeleting 
 }: FeedbackCardProps) {
   // 안전한 기본값 설정 - 사용자가 삭제된 경우 처리
-  const user = feedback.user || { name: '탈퇴한 사용자', role: null };
+  const user = feedback.user || { name: '탈퇴회원', role: null };
   const likeCount = feedback.like_count || 0;
   const rating = feedback.rating || 0;
   const canEdit = feedback.is_owner; // 수정/삭제 권한 확인
@@ -527,7 +527,7 @@ function FeedbackCard({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
           <span className="font-medium text-gray-900 text-sm sm:text-base">
-            {user?.name || '탈퇴한 사용자'}
+            {user?.name || '탈퇴회원'}
           </span>
           {user?.role === 'SENIOR' && (
             <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">

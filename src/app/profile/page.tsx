@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Settings, LogOut, Edit, Eye, Plus, Calendar, BookOpen, MessageCircle, Heart, Trash2 } from 'lucide-react';
+import { User, Settings, LogOut, Edit, Eye, Plus, Calendar, BookOpen, MessageCircle, Heart, Trash2, UserMinus } from 'lucide-react';
 import Link from 'next/link';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuth, withAuth } from '@/hooks/useAuth';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
+import { WithdrawConfirmModal } from '@/components/ui/withdraw-confirm-modal';
 
 function ProfilePage() {
   const { user, portfolios, isLoading, error, handleRoleSwitch, deletePortfolio } = useUserProfile();
@@ -24,6 +25,11 @@ function ProfilePage() {
     isLoading: false,
     name: ''
   });
+
+  const [withdrawModal, setWithdrawModal] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [withdrawSuccess, setWithdrawSuccess] = useState(false);
+  const [withdrawError, setWithdrawError] = useState('');
 
   // 설정 모달 열기
   const handleSettingsClick = () => {
@@ -119,6 +125,32 @@ function ProfilePage() {
   // 모달 닫기
   const handleDeleteCancel = () => {
     setDeleteModal({ isOpen: false });
+  };
+
+  // 회원 탈퇴 API 호출
+  const handleWithdraw = async () => {
+    setIsWithdrawing(true);
+    setWithdrawError('');
+    try {
+      const response = await fetch('/api/auth/withdraw', {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const result = await response.json();
+      if (result.success) {
+        setWithdrawSuccess(true);
+        // 로그아웃 처리 (예시)
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      } else {
+        setWithdrawError(result.message || '탈퇴에 실패했습니다.');
+      }
+    } catch (err) {
+      setWithdrawError('네트워크 오류가 발생했습니다.');
+    } finally {
+      setIsWithdrawing(false);
+    }
   };
 
   if (isLoading) {
@@ -437,6 +469,35 @@ function ProfilePage() {
             </div>
           )}
         </div>
+
+        <div className="flex justify-end mt-8">
+          <button
+            onClick={() => setWithdrawModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+          >
+            <UserMinus className="w-4 h-4" />
+            회원 탈퇴
+          </button>
+        </div>
+
+        <WithdrawConfirmModal
+          isOpen={withdrawModal}
+          onClose={() => setWithdrawModal(false)}
+          onConfirm={handleWithdraw}
+          isLoading={isWithdrawing}
+        />
+        {withdrawSuccess && (
+          <div className="mt-6 text-center text-green-600 font-semibold">
+            회원 탈퇴가 완료되었습니다. 2초 후 로그인 화면으로 이동합니다.<br />
+            기존에 작성한 피드백과 포트폴리오는 삭제되지 않습니다.
+          </div>
+        )}
+        {withdrawError && (
+          <div className="mt-6 text-center text-red-600 font-semibold">
+            {withdrawError}
+          </div>
+        )}
+
       </main>
       
       {/* 삭제 확인 모달 */}

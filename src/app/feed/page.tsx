@@ -216,7 +216,7 @@ export default function FeedPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{portfolio.user?.name || '탈퇴한 사용자'}</span>
+                    <span>{portfolio.user?.name || '탈퇴회원'}</span>
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-1" title="피드백 개수">
                         <MessageCircle className="w-4 h-4" />

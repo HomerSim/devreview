@@ -221,7 +221,7 @@ function PortfolioHeader({ portfolio }: { portfolio: PortfolioDetail }) {
         </p>
         
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500 mb-4">
-          <span>작성자: {portfolio.user?.name || '탈퇴한 사용자'}</span>
+          <span>작성자: {portfolio.user?.name || '탈퇴회원'}</span>
           <span className="hidden sm:inline">•</span>
           <span>{formatDate(portfolio.created_at)}</span>
           <span className="hidden sm:inline">•</span>
