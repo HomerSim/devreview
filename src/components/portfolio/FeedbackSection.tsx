@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Send, Star, ThumbsUp } from 'lucide-react';
+import { Send, Star, ThumbsUp, Edit, Trash2, Save, X } from 'lucide-react';
 import { Feedback, FeedbackResponse } from '@/types/portfolio';
 import { formatRelativeTime } from '@/lib/utils/date';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginPrompt } from '@/components/auth/LoginPrompt';
+import { FeedbackDeleteModal } from '@/components/ui/feedback-delete-modal';
 
 interface FeedbackSectionProps {
   portfolioId: string;
@@ -20,6 +21,19 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const { isAuthenticated } = useAuth();
+  
+  // 🎯 수정/삭제 관련 상태
+  const [editingFeedback, setEditingFeedback] = useState<{
+    id: string;
+    content: string;
+    rating: number;
+  } | null>(null);
+  const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    feedbackId: string | null;
+    feedbackContent: string;
+  }>({ isOpen: false, feedbackId: null, feedbackContent: '' });
   
   // 🎯 페이징 관련 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -170,6 +184,102 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
     }
   };
 
+  // 🎯 피드백 수정 시작
+  const handleEditStart = (feedback: Feedback) => {
+    setEditingFeedback({
+      id: feedback.id,
+      content: feedback.content,
+      rating: feedback.rating
+    });
+  };
+
+  // 🎯 피드백 수정 취소
+  const handleEditCancel = () => {
+    setEditingFeedback(null);
+  };
+
+  // 🎯 피드백 수정 저장
+  const handleEditSave = async () => {
+    if (!editingFeedback || !editingFeedback.content.trim()) return;
+
+    try {
+      const response = await fetch(`/api/feedbacks/${editingFeedback.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          content: editingFeedback.content,
+          rating: editingFeedback.rating
+        }),
+      });
+
+      if (response.ok) {
+        // 수정 성공 시 피드백 목록 새로고침
+        await loadFeedbacks(1, false);
+        setEditingFeedback(null);
+        setSuccessMessage('피드백이 수정되었습니다! ✏️');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`❌ Edit Error [${response.status}]:`, errorData);
+        setErrorMessage('피드백 수정에 실패했습니다.');
+        setTimeout(() => setErrorMessage(''), 3000);
+      }
+    } catch (error) {
+      console.error('❌ Network error editing feedback:', error);
+      setErrorMessage('네트워크 오류가 발생했습니다.');
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  };
+
+  // 🎯 피드백 삭제 모달 열기
+  const handleDeleteClick = (feedback: Feedback) => {
+    setDeleteModal({
+      isOpen: true,
+      feedbackId: feedback.id,
+      feedbackContent: feedback.content
+    });
+  };
+
+  // 🎯 피드백 삭제 모달 닫기
+  const handleDeleteModalClose = () => {
+    setDeleteModal({ isOpen: false, feedbackId: null, feedbackContent: '' });
+  };
+
+  // 🎯 피드백 삭제 확인
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.feedbackId) return;
+
+    setDeletingFeedbackId(deleteModal.feedbackId);
+    try {
+      const response = await fetch(`/api/feedbacks/${deleteModal.feedbackId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        // 삭제 성공 시 피드백 목록 새로고침
+        await loadFeedbacks(1, false);
+        setSuccessMessage('피드백이 삭제되었습니다! 🗑️');
+        setTimeout(() => setSuccessMessage(''), 3000);
+        setDeleteModal({ isOpen: false, feedbackId: null, feedbackContent: '' });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`❌ Delete Error [${response.status}]:`, errorData);
+        setErrorMessage('피드백 삭제에 실패했습니다.');
+        setTimeout(() => setErrorMessage(''), 3000);
+      }
+    } catch (error) {
+      console.error('❌ Network error deleting feedback:', error);
+      setErrorMessage('네트워크 오류가 발생했습니다.');
+      setTimeout(() => setErrorMessage(''), 3000);
+    } finally {
+      setDeletingFeedbackId(null);
+    }
+  };
+
   if (loading) {
     return <FeedbackSkeleton />;
   }
@@ -276,6 +386,16 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
               <FeedbackCard 
                 key={feedback.id || `feedback-${index}`} 
                 feedback={feedback} 
+                onEdit={handleEditStart}
+                onDelete={handleDeleteClick}
+                isEditing={editingFeedback?.id === feedback.id}
+                editingContent={editingFeedback?.content || ''}
+                editingRating={editingFeedback?.rating || 0}
+                onEditCancel={handleEditCancel}
+                onEditSave={handleEditSave}
+                onEditContentChange={(content: string) => setEditingFeedback(prev => prev ? {...prev, content} : null)}
+                onEditRatingChange={(rating: number) => setEditingFeedback(prev => prev ? {...prev, rating} : null)}
+                isDeleting={deletingFeedbackId === feedback.id}
               />
             ))}
             
@@ -299,16 +419,109 @@ export function FeedbackSection({ portfolioId }: FeedbackSectionProps) {
           </div>
         )}
       </div>
+      
+      {/* 삭제 확인 모달 */}
+      <FeedbackDeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        isLoading={deletingFeedbackId !== null}
+        feedbackPreview={deleteModal.feedbackContent}
+      />
     </div>
   );
 }
 
-function FeedbackCard({ feedback }: { feedback: Feedback }) {
+interface FeedbackCardProps {
+  feedback: Feedback;
+  onEdit: (feedback: Feedback) => void;
+  onDelete: (feedback: Feedback) => void;
+  isEditing: boolean;
+  editingContent: string;
+  editingRating: number;
+  onEditCancel: () => void;
+  onEditSave: () => Promise<void>;
+  onEditContentChange: (content: string) => void;
+  onEditRatingChange: (rating: number) => void;
+  isDeleting: boolean;
+}
+
+function FeedbackCard({ 
+  feedback, 
+  onEdit, 
+  onDelete, 
+  isEditing, 
+  editingContent, 
+  editingRating, 
+  onEditCancel, 
+  onEditSave, 
+  onEditContentChange, 
+  onEditRatingChange, 
+  isDeleting 
+}: FeedbackCardProps) {
   // 안전한 기본값 설정 - 사용자가 삭제된 경우 처리
   const user = feedback.user || { name: '탈퇴한 사용자', role: null };
   const likeCount = feedback.like_count || 0;
   const rating = feedback.rating || 0;
+  const canEdit = feedback.is_owner; // 수정/삭제 권한 확인
 
+  if (isEditing) {
+    // 수정 모드 UI
+    return (
+      <div className="border-b border-gray-200 last:border-b-0 pb-4 last:pb-0">
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">평점</label>
+          <div className="flex items-center space-x-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                onClick={() => onEditRatingChange(star)}
+                className="focus:outline-none"
+              >
+                <Star
+                  className={`w-6 h-6 ${
+                    star <= editingRating
+                      ? 'text-yellow-400 fill-current'
+                      : 'text-gray-300'
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">피드백 내용</label>
+          <textarea
+            value={editingContent}
+            onChange={(e) => onEditContentChange(e.target.value)}
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+            placeholder="피드백을 수정해주세요..."
+          />
+        </div>
+        
+        <div className="flex gap-2">
+          <button
+            onClick={onEditSave}
+            className="flex items-center gap-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors"
+          >
+            <Save className="w-4 h-4" />
+            저장
+          </button>
+          <button
+            onClick={onEditCancel}
+            className="flex items-center gap-2 px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors"
+          >
+            <X className="w-4 h-4" />
+            취소
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 일반 표시 모드 UI
   return (
     <div className="border-b border-gray-200 last:border-b-0 pb-4 last:pb-0">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
@@ -329,6 +542,25 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
         </div>
         <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-500">
           <span>{formatRelativeTime(feedback.created_at)}</span>
+          {canEdit && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => onEdit(feedback)}
+                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                title="수정"
+              >
+                <Edit className="w-4 h-4 text-gray-600" />
+              </button>
+              <button
+                onClick={() => onDelete(feedback)}
+                disabled={isDeleting}
+                className="p-1 hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
+                title="삭제"
+              >
+                <Trash2 className={`w-4 h-4 ${isDeleting ? 'text-red-400' : 'text-gray-600'}`} />
+              </button>
+            </div>
+          )}
           {/* <div className="flex items-center gap-1">
             <ThumbsUp className="w-4 h-4" />
             <span>{likeCount}</span>

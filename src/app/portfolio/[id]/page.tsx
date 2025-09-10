@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ExternalLink, Github, Heart, MessageCircle } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Github, Heart, MessageCircle, Edit, Trash2, Save, X } from 'lucide-react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
-import { PortfolioDetail } from '@/types/portfolio';
+import { PortfolioDetail, FeedbackData } from '@/types/portfolio';
 import { formatDate, formatRelativeTime } from '@/lib/utils/date';
 import { FeedbackSection } from '@/components/portfolio/FeedbackSection';
 import { PortfolioSidebar } from './components/PortfolioSidebar';

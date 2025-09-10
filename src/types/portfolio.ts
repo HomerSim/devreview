@@ -26,6 +26,28 @@ export interface FormErrors {
   [key: string]: string;
 }
 
+// 피드백 관련 타입
+export interface FeedbackData {
+  id: string;
+  content: string;
+  rating: number;
+  portfolio_id: string;
+  user_id: string;
+  like_count: number;
+  created_at: string;
+  updated_at: string;
+  user: {
+    name: string;
+    role: string;
+    image: string;
+    id: string;
+    is_verified: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+  is_owner: boolean;
+}
+
 // ✅ PortfolioSubmission 제거 - PortfolioFormData로 통합
 
 // 포트폴리오 상세 정보 타입
@@ -69,6 +91,7 @@ export interface Feedback {
     role: 'SENIOR' | 'JUNIOR';
   } | null; // 사용자가 탈퇴한 경우 null일 수 있음
   like_count: number;
+  is_owner: boolean; // 현재 사용자가 이 피드백의 소유자인지
 }
 
 // 피드백 API 응답
