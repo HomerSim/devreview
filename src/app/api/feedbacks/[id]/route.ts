@@ -3,16 +3,14 @@ import { getAuthTokenFromRequest } from "@/lib/auth-cookies";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const feedbackId = params.id;
+    const feedbackId = (await params).id;
     const body = await req.json();
 
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(req);
-
-    console.log(`피드백 수정: ${feedbackId}`, body);
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/feedbacks/${feedbackId}`, {
       method: "PATCH",
@@ -47,10 +45,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const feedbackId = params.id;
+    const feedbackId = (await params).id;
 
     // 🍪 쿠키에서 토큰 추출
     const token = getAuthTokenFromRequest(req);
@@ -73,8 +71,6 @@ export async function DELETE(
       );
     }
 
-    console.log('피드백 삭제 성공');
-    
     return NextResponse.json({ message: "피드백이 삭제되었습니다." });
   } catch (error) {
     console.error("피드백 삭제 에러:", error);
