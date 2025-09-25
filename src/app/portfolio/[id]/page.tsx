@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ExternalLink, Github, Heart, MessageCircle, Edit, Trash2, Save, X } from 'lucide-react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
@@ -296,12 +296,27 @@ function PortfolioContent({ content }: { content: string }) {
     em: ({ children }: { children: React.ReactNode }) => (
       <em className="italic text-gray-700">{children}</em>
     ),
-    code: ({ children }: { children: React.ReactNode }) => (
-      <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-800">{children}</code>
-    ),
+    code: ({ children, className }: { children: React.ReactNode; className?: string }) => {
+      // pre 태그 안의 code는 다르게 스타일링
+      const isInPre = className?.includes('language-') || false;
+      
+      if (isInPre) {
+        return (
+          <code className="text-sm font-mono text-gray-800 whitespace-pre-wrap">
+            {children}
+          </code>
+        );
+      }
+      
+      return (
+        <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-800">
+          {children}
+        </code>
+      );
+    },
     pre: ({ children }: { children: React.ReactNode }) => (
-      <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto mb-4">
-        <code className="text-sm font-mono text-gray-800">{children}</code>
+      <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto mb-4 [&>code]:block [&>code]:leading-relaxed">
+        {children}
       </pre>
     ),
     blockquote: ({ children }: { children: React.ReactNode }) => (

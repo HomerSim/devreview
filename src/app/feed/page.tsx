@@ -179,55 +179,60 @@ export default function FeedPage() {
             </div>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             {filteredPortfolios.map((portfolio) => (
               <Link key={portfolio.id} href={`/portfolio/${portfolio.id}`}>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 hover:shadow-md transition-shadow h-full flex flex-col">
                   {/* 카테고리 배지 */}
-                  <div className="mb-3">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                  <div className="mb-2">
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
                       {portfolio.category}
                     </span>
                   </div>
                   
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {/* 제목 - 고정 높이 */}
+                  <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem]">
                     {portfolio.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  
+                  {/* 설명 - 고정 높이 */}
+                  <p className="text-gray-600 text-sm mb-3 line-clamp-2 min-h-[2.5rem] flex-shrink-0">
                     {portfolio.description}
                   </p>
                   
-                  <div className="mb-4">
-                    <div className="flex flex-wrap gap-2">
+                  {/* 기술 스택 - 고정 높이 */}
+                  <div className="mb-3 min-h-[2rem] flex items-start">
+                    <div className="flex flex-wrap gap-1.5">
                       {portfolio.tech_stack.slice(0, 3).map((tech: string) => (
                         <span
                           key={tech}
-                          className="px-2 py-1 bg-blue-50 text-blue-500 text-xs rounded-md"
+                          className="px-2 py-0.5 bg-blue-50 text-blue-500 text-xs rounded whitespace-nowrap"
                         >
                           {tech}
                         </span>
                       ))}
                       {portfolio.tech_stack.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
+                        <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded whitespace-nowrap">
                           +{portfolio.tech_stack.length - 3}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{portfolio.user?.name || '탈퇴회원'}</span>
-                    <div className="flex items-center gap-3">
+                  {/* 하단 정보 - 카드 맨 아래 고정 */}
+                  <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
+                    <span className="truncate pr-2">{portfolio.user?.name || '탈퇴회원'}</span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <div className="flex items-center gap-1" title="피드백 개수">
-                        <MessageCircle className="w-4 h-4" />
+                        <MessageCircle className="w-3 h-3" />
                         <span>{portfolio.feedback_count}</span>
                       </div>
                       <div className="flex items-center gap-1" title="좋아요 개수">
-                        <Heart className="w-4 h-4" />
+                        <Heart className="w-3 h-3" />
                         <span>{portfolio.like_count}</span>
                       </div>
                       <div className="flex items-center gap-1" title="조회수">
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-3 h-3" />
                         <span>{portfolio.view_count}</span>
                       </div>
                     </div>
