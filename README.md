@@ -1,119 +1,50 @@
-# DevReview - 개발자 포트폴리오 리뷰 플랫폼 (Frontend)
+# DevReview
 
-> "AI는 줄 수 없는, 시니어의 진짜 피드백으로 취업 관문을 뚫으세요"
+> 개발자 포트폴리오 리뷰 플랫폼
 
-DevReview는 주니어 개발자들이 시니어 개발자들로부터 포트폴리오에 대한 실무 중심의 피드백을 받을 수 있는 플랫폼의 **프론트엔드**입니다. Next.js 14 기반으로 구축되었으며, 분리된 백엔드 API와 통신합니다.
+개발자들이 포트폴리오에 대한 피드백을 주고받을 수 있는 웹 플랫폼입니다. Next.js 14와 TypeScript로 구축된 프론트엔드 애플리케이션입니다.
 
 ## ✨ 주요 기능
 
-### 👶 주니어 개발자를 위한 기능
-- **포트폴리오 업로드**: GitHub URL, 배포 URL과 함께 프로젝트를 상세히 소개
-- **실무 중심 피드백**: 현업 시니어 개발자들로부터 구체적인 개선점 제안
-- **익명 시스템**: 부담 없는 환경에서 솔직한 피드백 교환
-- **기술 스택별 필터링**: 관심 분야의 포트폴리오 및 피드백 확인
+- 포트폴리오 업로드 및 공유
+- 개발자간 피드백 시스템
+- 기술 스택별 필터링
+- 소셜 로그인 (Google)
+- 반응형 웹 디자인
 
-### 👨‍💼 시니어 개발자를 위한 기능
-- **포트폴리오 리뷰**: 주니어들의 프로젝트에 전문적인 피드백 제공
-- **개발자 인증 시스템**: LinkedIn 프로필 및 재직증명서를 통한 신원 확인
-- **멘토링 기여**: 개발 커뮤니티 성장에 기여
+## 🛠️ 기술 스택
 
-### � 인증 시스템
-- **SSO 로그인**: Google, GitHub 소셜 로그인만 지원
-- **JWT 토큰**: 백엔드와의 안전한 통신
-- **자동 계정 생성**: 소셜 로그인 시 자동으로 계정 생성
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- React Context + Hooks
+- JWT Authentication
+- Lucide React Icons
 
-## �🛠️ 기술 스택
-
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS  
-- **HTTP Client**: Fetch API (네이티브)
-- **State Management**: React Context + Hooks
-- **Authentication**: JWT Token 기반
-- **Icons**: Lucide React
-- **UI**: 완전 반응형 디자인
-
-## � 프로젝트 구조
+## 📂 프로젝트 구조
 
 ```
 src/
-├── app/                    # Next.js App Router 페이지
-│   ├── auth/              # 인증 관련
-│   │   └── callback/      # SSO 콜백 처리
+├── app/                   # Next.js App Router 페이지
+│   ├── api/               # 백엔드 API를 호출하는 Route Handlers
+│   ├── auth/              # 인증 관련 페이지 (콜백, 에러)
 │   ├── login/             # 로그인 페이지
-│   ├── layout.tsx         # 전역 레이아웃  
-│   └── page.tsx          # 홈페이지
-├── components/            # 재사용 가능한 컴포넌트
-├── hooks/                # 커스텀 훅
-│   ├── useAuth.tsx       # 인증 상태 관리
-│   └── useData.ts        # 데이터 fetching
-├── lib/                  # 유틸리티 및 설정
-│   └── api.ts           # API 클라이언트
-└── types/               # TypeScript 타입 정의
-    └── api.ts          # API 관련 타입
-```
-
-```prisma
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  image     String?
-  role      UserRole @default(JUNIOR)
-  verified  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  portfolios Portfolio[]
-  feedbacks  Feedback[]
-}
-
-model Portfolio {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  content     String
-  githubUrl   String
-  deployUrl   String?
-  techStack   String[]
-  authorId    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  author    User       @relation(fields: [authorId], references: [id])
-  feedbacks Feedback[]
-}
-
-model Feedback {
-  id           String   @id @default(cuid())
-  content      String
-  likes        Int      @default(0)
-  authorId     String
-  portfolioId  String
-  createdAt    DateTime @default(now())
-  
-  author    User      @relation(fields: [authorId], references: [id])
-  portfolio Portfolio @relation(fields: [portfolioId], references: [id])
-}
-
-enum UserRole {
-  JUNIOR
-  SENIOR
-}
+│   ├── portfolio/         # 포트폴리오 생성, 조회, 수정 페이지
+│   ├── layout.tsx         # 전역 레이아웃
+│   └── page.tsx           # 홈페이지
+├── components/            # 재사용 가능한 UI 컴포넌트
+├── hooks/                 # 커스텀 훅 (e.g., useAuth)
+├── lib/                   # 유틸리티 및 API 통신 관련 함수
+└── types/                 # TypeScript 타입 정의
 ```
 
 ## 🚀 시작하기
 
-### 사전 요구사항
-- Node.js 18+ 
-- PostgreSQL 데이터베이스
-- GitHub/Google OAuth 앱 설정
-
-### 설치 및 설정
+### 설치 및 실행
 
 1. **저장소 클론**
 ```bash
-git clone https://github.com/your-username/devreview.git
+git clone https://github.com/HomerSim/devreview.git
 cd devreview
 ```
 
@@ -123,50 +54,25 @@ npm install
 ```
 
 3. **환경 변수 설정**
-`.env.local` 파일을 생성하고 다음 변수들을 설정하세요:
+`.env.local` 파일을 생성하고 필요한 환경 변수를 설정하세요.
 ```env
-# 데이터베이스
-DATABASE_URL="postgresql://username:password@localhost:5432/devreview"
-
-# NextAuth.js
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-here"
-
-# OAuth 설정
-GITHUB_CLIENT_ID="your-github-client-id"
-GITHUB_CLIENT_SECRET="your-github-client-secret"
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
+NEXT_PUBLIC_API_URL=your-backend-api-url
+API_KEY = your-backend-frontend-api-key-here
 ```
 
-4. **데이터베이스 마이그레이션**
-```bash
-npx prisma migrate dev
-```
-
-5. **개발 서버 실행**
+4. **개발 서버 실행**
 ```bash
 npm run dev
 ```
 
-서버가 실행되면 [http://localhost:3000](http://localhost:3000)에서 애플리케이션을 확인할 수 있습니다.
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인하세요.
 
-## 📝 주요 특징
+## � 주의사항
 
-### UI/UX 디자인
-- **모던 그라데이션**: 블루에서 퍼플로 이어지는 아름다운 배경
-- **반응형 디자인**: 모든 기기에서 최적화된 사용자 경험
-- **직관적인 네비게이션**: 명확한 정보 구조와 사용자 플로우
-
-### 개발자 경험
-- **TypeScript**: 타입 안전성과 개발 생산성 향상
-- **Tailwind CSS**: 빠른 스타일링과 일관된 디자인 시스템
-- **Prisma ORM**: 타입 안전한 데이터베이스 액세스
-
-### 보안 및 인증
-- **OAuth 인증**: GitHub, Google 계정을 통한 안전한 로그인
-- **시니어 인증**: LinkedIn 프로필과 재직증명서를 통한 검증
-- **익명성 보장**: 안전한 피드백 환경 제공
+이 프로젝트는 **학습/데모 목적**으로 제작되었습니다.
+- 실제 운영 환경에서 사용 시 보안 검토가 필요합니다
+- 환경 변수 파일(`.env.local`)은 절대 공개하지 마세요
+- OAuth 클라이언트 정보는 안전하게 관리하세요
 
 ## 🤝 기여하기
 
@@ -178,11 +84,9 @@ npm run dev
 
 ## 📄 라이선스
 
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
 
-## 🔗 관련 링크
+## 🔗 참고 링크
 
 - [Next.js 문서](https://nextjs.org/docs)
-- [Prisma 문서](https://www.prisma.io/docs)
 - [Tailwind CSS 문서](https://tailwindcss.com/docs)
-- [NextAuth.js 문서](https://next-auth.js.org)

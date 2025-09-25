@@ -38,6 +38,25 @@ export const TechStackSelector: React.FC<TechStackSelectorProps> = ({
     setSearchTech('');
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchTech.trim()) {
+      e.preventDefault();
+      const trimmedTech = searchTech.trim();
+      
+      // 이미 선택된 기술이 아닌 경우에만 추가
+      if (!selectedTechStack.includes(trimmedTech)) {
+        handleAddTech(trimmedTech);
+      }
+    }
+  };
+
+  const handleAddCustomTech = () => {
+    const trimmedTech = searchTech.trim();
+    if (trimmedTech && !selectedTechStack.includes(trimmedTech)) {
+      handleAddTech(trimmedTech);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="relative">
@@ -45,24 +64,38 @@ export const TechStackSelector: React.FC<TechStackSelectorProps> = ({
           type="text"
           value={searchTech}
           onChange={(e) => setSearchTech(e.target.value)}
-          placeholder="기술 스택을 검색하고 선택하세요"
+          onKeyDown={handleKeyDown}
+          placeholder="기술 스택을 검색하고 선택하거나 Enter로 직접 추가하세요"
           className={cn(
             "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm sm:text-base",
             error ? "border-red-500" : "border-gray-300"
           )}
         />
         
-        {searchTech && filteredTechOptions.length > 0 && (
+        {searchTech && (
           <div className="absolute z-10 mt-1 w-full max-h-40 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg">
+            {/* 기존 옵션들 */}
             {filteredTechOptions.map((tech) => (
               <button
                 key={tech}
                 onClick={() => handleAddTech(tech)}
-                className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors text-sm sm:text-base first:rounded-t-lg last:rounded-b-lg"
+                className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors text-sm sm:text-base border-b border-gray-100 last:border-b-0"
               >
                 {tech}
               </button>
             ))}
+            
+            {/* 사용자 입력 텍스트를 직접 추가할 수 있는 옵션 */}
+            {searchTech.trim() && 
+             !filteredTechOptions.some(tech => tech.toLowerCase() === searchTech.toLowerCase()) &&
+             !selectedTechStack.includes(searchTech.trim()) && (
+              <button
+                onClick={handleAddCustomTech}
+                className="w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors text-sm sm:text-base bg-blue-25 text-blue-700 font-medium"
+              >
+                "{searchTech.trim()}" 추가하기
+              </button>
+            )}
           </div>
         )}
       </div>
