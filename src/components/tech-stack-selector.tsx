@@ -93,7 +93,7 @@ export const TechStackSelector: React.FC<TechStackSelectorProps> = ({
                 onClick={handleAddCustomTech}
                 className="w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors text-sm sm:text-base bg-blue-25 text-blue-700 font-medium"
               >
-                "{searchTech.trim()}" 추가하기
+                &quot;{searchTech.trim()}&quot; 추가하기
               </button>
             )}
           </div>

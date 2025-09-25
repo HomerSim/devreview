@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/sso/google`;
   const response = await fetch(apiUrl, {

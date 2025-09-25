@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { User, Settings, LogOut, Edit, Eye, Plus, Calendar, BookOpen, MessageCircle, Heart, Trash2, UserMinus } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuth, withAuth } from '@/hooks/useAuth';
 import { DeleteConfirmModal } from '@/components/ui/delete-confirm-modal';
@@ -284,9 +285,11 @@ function ProfilePage() {
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                 {user.image && user.image !== 'string' ? (
-                  <img 
+                  <Image 
                     src={user.image} 
                     alt={user.name} 
+                    width={80}
+                    height={80}
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
